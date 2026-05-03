@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Teaching Tools | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Admin Teaching Tools</h1>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" href="{{ url_for('teacher.content_review') }}">Content workflow</a>
+        <a class="btn btn-outline-success" href="{{ url_for('teacher.attempts') }}">Grade attempts</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-primary text-white"><div class="card-body"><div class="small">Students</div><div class="display-6">{{ metrics.students }}</div></div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-success text-white"><div class="card-body"><div class="small">Published Sub-Courses</div><div class="display-6">{{ metrics.sub_courses }}</div></div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-info text-white"><div class="card-body"><div class="small">Published Lessons</div><div class="display-6">{{ metrics.lessons }}</div></div></div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0" style="background:#14532d;color:#fff;"><div class="card-body"><div class="small">Published Quizzes</div><div class="display-6">{{ metrics.quizzes }}</div></div></div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0" style="background:#3f3f46;color:#fff;"><div class="card-body"><div class="small">Total Attempts</div><div class="display-6">{{ metrics.attempts }}</div></div></div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white"><h2 class="h5 mb-0">Latest Attempts</h2></div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Quiz</th>
+                    <th>Status</th>
+                    <th>Score</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in latest_attempts %}
+                <tr>
+                    <td>{{ attempt.user.full_name }}</td>
+                    <td>{{ attempt.quiz.title }}</td>
+                    <td>{{ attempt.status.value|replace('_', ' ')|title }}</td>
+                    <td>{{ '%.2f'|format(attempt.score) }} / {{ '%.2f'|format(attempt.max_score) }}</td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('teacher.review_attempt', attempt_id=attempt.id) }}">Review</a></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center text-muted py-4">No attempts yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

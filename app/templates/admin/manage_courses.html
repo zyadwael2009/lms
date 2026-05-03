@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Courses | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h4 mb-3">Create Main Course</h1>
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.title.label(class='form-label') }}
+                        {{ form.title(class='form-control', placeholder='Main course title') }}
+                        {% for error in form.title.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class='form-label') }}
+                        {{ form.description(class='form-control', rows='4', placeholder='Description') }}
+                        {% for error in form.description.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.access_code.label(class='form-label') }}
+                        {{ form.access_code(class='form-control', placeholder='Optional custom code') }}
+                        <div class="form-text">{{ form.access_code.description }}</div>
+                        {% for error in form.access_code.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    {{ form.submit(class='btn btn-primary w-100') }}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Main Courses</h2>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for main_course in main_courses %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h3 class="h6 mb-1">{{ main_course.title }}</h3>
+                            <div class="small text-muted mb-1">{{ main_course.description or 'No description.' }}</div>
+                            <span class="badge bg-secondary">Code: {{ main_course.access_code }}</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.manage_sub_courses', main_course_id=main_course.id) }}">Sub-courses</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.edit_course', main_course_id=main_course.id) }}">Edit</a>
+                            <form method="post" action="{{ url_for('admin.delete_course', main_course_id=main_course.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="list-group-item text-muted">No main courses created yet.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

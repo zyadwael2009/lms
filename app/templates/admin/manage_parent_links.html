@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Parent Links | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h5 mb-3">Link Parent to Student</h1>
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.parent_id.label(class='form-label') }}
+                        {{ form.parent_id(class='form-select') }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.student_id.label(class='form-label') }}
+                        {{ form.student_id(class='form-select') }}
+                    </div>
+
+                    {{ form.submit(class='btn btn-primary w-100') }}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h2 class="h6 mb-0">Existing Links</h2></div>
+            <div class="table-responsive">
+                <table class="table table-striped mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Parent</th>
+                            <th>Student</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for link in links %}
+                        <tr>
+                            <td>{{ link.parent.full_name }}</td>
+                            <td>{{ link.student.full_name }}</td>
+                            <td>
+                                <form method="post" action="{{ url_for('admin.delete_parent_link', link_id=link.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="text-center text-muted py-4">No parent links yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

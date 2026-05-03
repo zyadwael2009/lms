@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Content Overview | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Admin Content Overview</h1>
+    <a class="btn btn-outline-secondary" href="{{ url_for('teacher.dashboard') }}">Back to teaching tools</a>
+</div>
+
+{% for main_course in main_courses %}
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <h2 class="h5">{{ main_course.title }}</h2>
+        <div class="small text-muted mb-2">Code: {{ main_course.access_code }}</div>
+
+        {% if main_course.sub_courses %}
+        <ul class="list-group list-group-flush">
+            {% for sub_course in main_course.sub_courses %}
+            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ sub_course.title }}</strong>
+                    <div class="small text-muted">{{ sub_course.description or 'No description.' }}</div>
+                </div>
+                <span class="badge {% if sub_course.is_published %}bg-success{% else %}bg-secondary{% endif %}">
+                    {{ 'Published' if sub_course.is_published else 'Hidden' }}
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="text-muted">No sub-courses.</div>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="alert alert-warning">No courses found.</div>
+{% endfor %}
+{% endblock %}

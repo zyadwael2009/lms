@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Lesson | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-8">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 mb-0">Edit Lesson</h1>
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin.manage_lessons', module_id=lesson.module_id) }}">Back</a>
+    </div>
+    <div class="card shadow-sm"><div class="card-body">
+        <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="mb-3">{{ form.title.label(class='form-label') }}{{ form.title(class='form-control') }}</div>
+            <div class="mb-3">{{ form.content_type.label(class='form-label') }}{{ form.content_type(class='form-select') }}</div>
+            <div class="mb-3">{{ form.content_url.label(class='form-label') }}{{ form.content_url(class='form-control') }}</div>
+            <div class="mb-3">{{ form.text_content.label(class='form-label') }}{{ form.text_content(class='form-control', rows='6') }}</div>
+            <div class="mb-3">{{ form.sort_order.label(class='form-label') }}{{ form.sort_order(class='form-control') }}</div>
+            <div class="form-check mb-3">{{ form.is_published(class='form-check-input') }} {{ form.is_published.label(class='form-check-label') }}</div>
+            {{ form.submit(class='btn btn-primary') }}
+        </form>
+    </div></div>
+</div></div>
+{% endblock %}

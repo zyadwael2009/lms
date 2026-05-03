@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Home | Flask LMS{% endblock %}
+
+{% block content %}
+{% if not current_user.is_authenticated %}
+<div class="p-5 mb-4 bg-light rounded-3 border">
+    <div class="container-fluid py-2">
+        <h1 class="display-6 fw-bold">Learning Management System</h1>
+        <p class="col-md-9 fs-5">
+            Register as a student or parent. If you have a main course code during registration,
+            all sub-courses under that main course become available after admin approval.
+        </p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('auth.register') }}">Create account</a>
+    </div>
+</div>
+{% elif current_user.is_admin %}
+<div class="alert alert-info">
+    You are signed in as admin. Use the navigation menu to manage users and courses.
+</div>
+{% else %}
+<h1 class="h3 mb-3">My Courses</h1>
+
+{% if enrolled_main_courses %}
+    {% for main_course in enrolled_main_courses %}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+            <h2 class="h5 mb-1">{{ main_course.title }}</h2>
+            <p class="text-muted mb-2">{{ main_course.description or 'No description yet.' }}</p>
+            <div class="small mb-3">
+                Main course code: <span class="badge bg-secondary">{{ main_course.access_code }}</span>
+            </div>
+
+            <h3 class="h6">Sub-courses</h3>
+            {% if main_course.sub_courses %}
+            <ul class="list-group list-group-flush">
+                {% for sub_course in main_course.sub_courses %}
+                <li class="list-group-item px-0">
+                    <a class="text-decoration-none" href="{{ url_for('learning.sub_course_detail', sub_course_id=sub_course.id) }}">
+                        <strong>{{ sub_course.title }}</strong>
+                    </a>
+                    <div class="small text-muted">{{ sub_course.description or 'No description.' }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted small mb-0">No sub-courses added yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<div class="alert alert-warning">
+    You do not have any enrolled main course yet. Ask admin for a main course code and use it during registration,
+    or ask admin to enroll you manually.
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

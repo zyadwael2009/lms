@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Pending Approval | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card border-warning shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h4">Account Pending Approval</h1>
+                <p class="mb-2">
+                    Your registration has been submitted and is waiting for admin approval.
+                </p>
+                <p class="text-muted mb-0 small">
+                    Once approved, any main course code entered during registration will unlock all related sub-courses.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

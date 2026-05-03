@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Quizzes | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-0">Quizzes</h1>
+        <div class="text-muted">Module: {{ module.title }}</div>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin.manage_modules', sub_course_id=module.sub_course_id) }}">Back to modules</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Add Quiz</h2>
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.title.label(class='form-label') }}
+                        {{ form.title(class='form-control') }}
+                        {% for error in form.title.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class='form-label') }}
+                        {{ form.description(class='form-control', rows='4') }}
+                        {% for error in form.description.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.time_limit_minutes.label(class='form-label') }}
+                        {{ form.time_limit_minutes(class='form-control', placeholder='Optional') }}
+                        {% for error in form.time_limit_minutes.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="form-check mb-3">
+                        {{ form.is_published(class='form-check-input') }}
+                        {{ form.is_published.label(class='form-check-label') }}
+                    </div>
+
+                    {{ form.submit(class='btn btn-primary w-100') }}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h2 class="h5 mb-0">Existing Quizzes</h2></div>
+            <ul class="list-group list-group-flush">
+                {% for quiz in quizzes %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ quiz.title }}</strong>
+                            <div class="small text-muted">{{ quiz.description or 'No description.' }}</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.manage_questions', quiz_id=quiz.id) }}">Questions</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.edit_quiz', quiz_id=quiz.id) }}">Edit</a>
+                            <form method="post" action="{{ url_for('admin.delete_quiz', quiz_id=quiz.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">No quizzes yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

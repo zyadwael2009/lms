@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Manage Users</h1>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" href="{{ url_for('admin.manage_enrollments') }}">Enrollments</a>
+        <a class="btn btn-outline-primary" href="{{ url_for('admin.manage_parent_links') }}">Parent Links</a>
+    </div>
+</div>
+
+<form method="get" class="card shadow-sm mb-3">
+    <div class="card-body row g-2 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label">Search</label>
+            <input class="form-control" type="text" name="q" value="{{ search }}" placeholder="Name or email">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Role</label>
+            <select class="form-select" name="role">
+                <option value="" {% if not role_filter %}selected{% endif %}>All roles</option>
+                <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="student" {% if role_filter == 'student' %}selected{% endif %}>Student</option>
+                <option value="parent" {% if role_filter == 'parent' %}selected{% endif %}>Parent</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="status">
+                <option value="" {% if not status_filter %}selected{% endif %}>All statuses</option>
+                <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-primary w-100" type="submit">Go</button>
+        </div>
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Access</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.full_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role.value }}</td>
+                    <td>{{ user.admin_access_level.value if user.role.value == 'admin' else '-' }}</td>
+                    <td>
+                        {% if not user.is_active %}
+                        <span class="badge bg-secondary">Inactive</span>
+                        {% elif user.is_approved %}
+                        <span class="badge bg-success">Approved</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.edit_user', user_id=user.id) }}">Edit</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No users found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

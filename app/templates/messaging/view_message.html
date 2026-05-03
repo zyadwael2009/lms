@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Message | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">{{ message.subject or '(No subject)' }}</h1>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" href="{{ url_for('messaging.inbox') }}">Inbox</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('messaging.sent_messages') }}">Sent</a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="mb-2"><strong>From:</strong> {{ message.sender.full_name }} ({{ message.sender.email }})</div>
+        <div class="mb-2"><strong>To:</strong> {{ message.receiver.full_name }} ({{ message.receiver.email }})</div>
+        <div class="mb-3"><strong>Date:</strong> {{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+        <hr>
+        <p class="mb-0" style="white-space: pre-line;">{{ message.body }}</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Lessons | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-0">Lessons</h1>
+        <div class="text-muted">Module: {{ module.title }}</div>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin.manage_modules', sub_course_id=module.sub_course_id) }}">Back to modules</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Add Lesson</h2>
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.title.label(class='form-label') }}
+                        {{ form.title(class='form-control') }}
+                        {% for error in form.title.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.content_type.label(class='form-label') }}
+                        {{ form.content_type(class='form-select') }}
+                        {% for error in form.content_type.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.content_url.label(class='form-label') }}
+                        {{ form.content_url(class='form-control', placeholder='https://...') }}
+                        {% for error in form.content_url.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.text_content.label(class='form-label') }}
+                        {{ form.text_content(class='form-control', rows='5') }}
+                        {% for error in form.text_content.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.sort_order.label(class='form-label') }}
+                        {{ form.sort_order(class='form-control') }}
+                        {% for error in form.sort_order.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="form-check mb-3">
+                        {{ form.is_published(class='form-check-input') }}
+                        {{ form.is_published.label(class='form-check-label') }}
+                    </div>
+
+                    {{ form.submit(class='btn btn-primary w-100') }}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h2 class="h5 mb-0">Existing Lessons</h2></div>
+            <ul class="list-group list-group-flush">
+                {% for lesson in lessons %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ lesson.sort_order }}. {{ lesson.title }}</strong>
+                            <div class="small text-muted">{{ lesson.content_type.value|upper }}</div>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.edit_lesson', lesson_id=lesson.id) }}">Edit</a>
+                            <form method="post" action="{{ url_for('admin.delete_lesson', lesson_id=lesson.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                            </form>
+                            <span class="badge {% if lesson.is_published %}bg-success{% else %}bg-secondary{% endif %}">
+                                {{ 'Published' if lesson.is_published else 'Hidden' }}
+                            </span>
+                        </div>
+                    </div>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">No lessons yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

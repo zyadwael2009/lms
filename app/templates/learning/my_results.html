@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}My Results | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">My Quiz Results</h1>
+    <a class="btn btn-outline-secondary" href="{{ url_for('main.my_courses') }}">Back to courses</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Quiz</th>
+                    <th>Module</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                    <th>Submitted</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in attempts %}
+                <tr>
+                    <td>{{ attempt.quiz.title }}</td>
+                    <td>{{ attempt.quiz.module.title }}</td>
+                    <td>{{ '%.2f'|format(attempt.score) }} / {{ '%.2f'|format(attempt.max_score) }}</td>
+                    <td>{{ '%.1f'|format(attempt.percentage) }}%</td>
+                    <td>{{ attempt.submitted_at.strftime('%Y-%m-%d %H:%M') if attempt.submitted_at else 'In progress' }}</td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('learning.quiz_result', attempt_id=attempt.id) }}">View</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">No quiz attempts yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

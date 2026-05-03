@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Quiz Attempts | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Quiz Attempts</h1>
+    <form method="get" class="d-flex gap-2">
+        <select class="form-select" name="status" style="min-width: 180px;">
+            <option value="" {% if not status_filter %}selected{% endif %}>All statuses</option>
+            <option value="started" {% if status_filter == 'started' %}selected{% endif %}>Started</option>
+            <option value="submitted" {% if status_filter == 'submitted' %}selected{% endif %}>Submitted</option>
+            <option value="graded" {% if status_filter == 'graded' %}selected{% endif %}>Graded</option>
+        </select>
+        <button class="btn btn-primary" type="submit">Filter</button>
+    </form>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Quiz</th>
+                    <th>Status</th>
+                    <th>Score</th>
+                    <th>Submitted</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in attempts %}
+                <tr>
+                    <td>{{ attempt.user.full_name }}</td>
+                    <td>{{ attempt.quiz.title }}</td>
+                    <td>{{ attempt.status.value|replace('_', ' ')|title }}</td>
+                    <td>{{ '%.2f'|format(attempt.score) }} / {{ '%.2f'|format(attempt.max_score) }}</td>
+                    <td>{{ attempt.submitted_at.strftime('%Y-%m-%d %H:%M') if attempt.submitted_at else '-' }}</td>
+                    <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('teacher.review_attempt', attempt_id=attempt.id) }}">Review</a></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No attempts found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

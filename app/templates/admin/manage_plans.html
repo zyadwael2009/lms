@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Plans | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h4 mb-3">Create Subscription Plan</h1>
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class='form-label') }}
+                        {{ form.name(class='form-control') }}
+                        {% for error in form.name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class='form-label') }}
+                        {{ form.description(class='form-control', rows='3') }}
+                        {% for error in form.description.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            {{ form.price.label(class='form-label') }}
+                            {{ form.price(class='form-control') }}
+                            {% for error in form.price.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.currency.label(class='form-label') }}
+                            {{ form.currency(class='form-control') }}
+                            {% for error in form.currency.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            {{ form.billing_cycle.label(class='form-label') }}
+                            {{ form.billing_cycle(class='form-select') }}
+                            {% for error in form.billing_cycle.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.features_json.label(class='form-label') }}
+                        {{ form.features_json(class='form-control', rows='3') }}
+                        <div class="form-text">{{ form.features_json.description }}</div>
+                        {% for error in form.features_json.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="form-check mb-3">
+                        {{ form.is_active(class='form-check-input') }}
+                        {{ form.is_active.label(class='form-check-label') }}
+                    </div>
+
+                    {{ form.submit(class='btn btn-primary w-100') }}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h2 class="h5 mb-0">Existing Plans</h2></div>
+            <div class="table-responsive">
+                <table class="table table-striped mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Cycle</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plan in plans %}
+                        <tr>
+                            <td>{{ plan.name }}</td>
+                            <td>{{ '%.2f'|format(plan.price) }} {{ plan.currency }}</td>
+                            <td>{{ plan.billing_cycle|title }}</td>
+                            <td>
+                                <span class="badge {% if plan.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ 'Active' if plan.is_active else 'Inactive' }}
+                                </span>
+                            </td>
+                            <td>
+                                <form method="post" action="{{ url_for('admin.toggle_plan', plan_id=plan.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="btn btn-sm btn-outline-primary" type="submit">Toggle</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="text-center text-muted py-4">No plans yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

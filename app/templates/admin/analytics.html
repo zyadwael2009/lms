@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Platform Analytics</h1>
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin.dashboard') }}">Back to dashboard</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 bg-primary text-white">
+            <div class="card-body">
+                <div class="small text-uppercase">Total Attempts</div>
+                <div class="display-6">{{ total_attempts }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 bg-success text-white">
+            <div class="card-body">
+                <div class="small text-uppercase">Average Score</div>
+                <div class="display-6">{{ '%.1f'|format(avg_percentage) }}%</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 bg-warning text-dark">
+            <div class="card-body">
+                <div class="small text-uppercase">Pending Users</div>
+                <div class="display-6">{{ approval_counts.pending }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 bg-dark text-white">
+            <div class="card-body">
+                <div class="small text-uppercase">Active Users</div>
+                <div class="display-6">{{ approval_counts.approved }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white"><h2 class="h6 mb-0">Users by Role</h2></div>
+            <div class="card-body">
+                <canvas id="roleChart" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white"><h2 class="h6 mb-0">Course Content Volume</h2></div>
+            <div class="card-body">
+                <canvas id="contentChart" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white"><h2 class="h6 mb-0">Top Quiz Performance</h2></div>
+    <div class="card-body">
+        {% if quiz_performance %}
+        <canvas id="quizChart" height="120"></canvas>
+        {% else %}
+        <div class="text-muted">No quiz attempts yet to generate performance analytics.</div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+const roleCounts = {{ role_counts|tojson }};
+const contentCounts = {{ content_counts|tojson }};
+const quizPerformance = {{ quiz_performance|tojson }};
+
+new Chart(document.getElementById('roleChart'), {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(roleCounts),
+        datasets: [{
+            data: Object.values(roleCounts),
+            backgroundColor: ['#0d6efd', '#198754', '#fd7e14', '#6f42c1']
+        }]
+    }
+});
+
+new Chart(document.getElementById('contentChart'), {
+    type: 'bar',
+    data: {
+        labels: Object.keys(contentCounts),
+        datasets: [{
+            label: 'Count',
+            data: Object.values(contentCounts),
+            backgroundColor: '#0dcaf0'
+        }]
+    },
+    options: {plugins: {legend: {display: false}}}
+});
+
+if (quizPerformance.length) {
+    new Chart(document.getElementById('quizChart'), {
+        type: 'bar',
+        data: {
+            labels: quizPerformance.map(item => item.title),
+            datasets: [{
+                label: 'Average %',
+                data: quizPerformance.map(item => Number(item.avg_percentage.toFixed(2))),
+                backgroundColor: '#20c997'
+            }]
+        },
+        options: {
+            scales: {y: {beginAtZero: true, max: 100}}
+        }
+    });
+}
+</script>
+{% endblock %}

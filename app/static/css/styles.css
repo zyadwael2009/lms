@@ -1,0 +1,15 @@
+body {
+    background: #f6f8fb;
+}
+
+.card {
+    border: 0;
+}
+
+.navbar-brand {
+    letter-spacing: 0.3px;
+}
+
+.list-group-item {
+    background-color: #fff;
+}

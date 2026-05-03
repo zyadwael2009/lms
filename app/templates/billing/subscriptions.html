@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}My Subscriptions | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">My Subscriptions</h1>
+    <a class="btn btn-outline-secondary" href="{{ url_for('billing.plans') }}">Browse plans</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-striped mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>Plan</th>
+                    <th>Status</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Auto renew</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subscription in subscriptions %}
+                <tr>
+                    <td>{{ subscription.plan.name }}</td>
+                    <td><span class="badge bg-secondary">{{ subscription.status.value|title }}</span></td>
+                    <td>{{ subscription.starts_at.strftime('%Y-%m-%d') if subscription.starts_at else '-' }}</td>
+                    <td>{{ subscription.ends_at.strftime('%Y-%m-%d') if subscription.ends_at else '-' }}</td>
+                    <td>{{ 'Yes' if subscription.auto_renew else 'No' }}</td>
+                    <td>
+                        {% if subscription.status.value == 'active' %}
+                        <form method="post" action="{{ url_for('billing.cancel_subscription', subscription_id=subscription.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Cancel</button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted small">No actions</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No subscriptions found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

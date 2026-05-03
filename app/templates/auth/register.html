@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Register | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h4 mb-3">Create your account</h1>
+                <p class="text-muted small">
+                    All new accounts start as pending. An admin must approve your registration before you can access course materials.
+                </p>
+
+                <form method="post" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.full_name.label(class='form-label') }}
+                            {{ form.full_name(class='form-control', placeholder='Your full name') }}
+                            {% for error in form.full_name.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form.email.label(class='form-label') }}
+                            {{ form.email(class='form-control', placeholder='you@example.com') }}
+                            {% for error in form.email.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.role.label(class='form-label') }}
+                            {{ form.role(class='form-select') }}
+                            {% for error in form.role.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form.main_course_code.label(class='form-label') }}
+                            {{ form.main_course_code(class='form-control', placeholder='Example: ABCD1234') }}
+                            <div class="form-text">{{ form.main_course_code.description }}</div>
+                            {% for error in form.main_course_code.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.password.label(class='form-label') }}
+                            {{ form.password(class='form-control', placeholder='At least 8 characters') }}
+                            {% for error in form.password.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form.confirm_password.label(class='form-label') }}
+                            {{ form.confirm_password(class='form-control', placeholder='Repeat password') }}
+                            {% for error in form.confirm_password.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {{ form.submit(class='btn btn-success w-100') }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

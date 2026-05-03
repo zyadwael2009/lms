@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ sub_course.title }} | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-0">{{ sub_course.title }}</h1>
+        <p class="text-muted mb-0">{{ sub_course.description or 'No description.' }}</p>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('main.my_courses') }}">Back to my courses</a>
+</div>
+
+{% if sub_course.modules %}
+    {% for module in sub_course.modules %}
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h2 class="h5 mb-1">Module {{ loop.index }}: {{ module.title }}</h2>
+            <p class="small text-muted">{{ module.description or 'No description.' }}</p>
+
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <h3 class="h6">Lessons</h3>
+                    {% if module.lessons %}
+                    <div class="list-group list-group-flush">
+                        {% for lesson in module.lessons %}
+                        {% if lesson.is_published %}
+                        <a class="list-group-item list-group-item-action px-0" href="{{ url_for('learning.lesson_detail', lesson_id=lesson.id) }}">
+                            <strong>{{ lesson.title }}</strong>
+                            <div class="small text-muted">Type: {{ lesson.content_type.value|upper }}</div>
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted small">No lessons yet.</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-lg-6">
+                    <h3 class="h6">Quizzes</h3>
+                    {% if module.quizzes %}
+                    <div class="list-group list-group-flush">
+                        {% for quiz in module.quizzes %}
+                        {% if quiz.is_published %}
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ quiz.title }}</strong>
+                                    <div class="small text-muted">{{ quiz.description or 'No description.' }}</div>
+                                    {% set latest_attempt = latest_attempts.get(quiz.id) %}
+                                    {% if latest_attempt %}
+                                    <div class="small">
+                                        Last score: {{ '%.2f'|format(latest_attempt.score) }} / {{ '%.2f'|format(latest_attempt.max_score) }}
+                                        ({{ '%.1f'|format(latest_attempt.percentage) }}%)
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <form method="post" action="{{ url_for('learning.start_quiz', quiz_id=quiz.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="btn btn-sm btn-primary" type="submit">Start quiz</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted small">No quizzes yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<div class="alert alert-warning">No modules are available in this sub-course yet.</div>
+{% endif %}
+{% endblock %}

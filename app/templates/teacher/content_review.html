@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Content Workflow | Flask LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Content Publishing Workflow</h1>
+    <a class="btn btn-outline-secondary" href="{{ url_for('teacher.dashboard') }}">Back to teacher dashboard</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white"><h2 class="h6 mb-0">Unpublished Sub-Courses</h2></div>
+            <ul class="list-group list-group-flush">
+                {% for item in unpublished_sub_courses %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ item.title }}</span>
+                    <form method="post" action="{{ url_for('teacher.toggle_sub_course_publish', sub_course_id=item.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-sm btn-success" type="submit">Publish</button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">No unpublished sub-courses.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white"><h2 class="h6 mb-0">Unpublished Lessons</h2></div>
+            <ul class="list-group list-group-flush">
+                {% for item in unpublished_lessons %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ item.title }}</span>
+                    <form method="post" action="{{ url_for('teacher.toggle_lesson_publish', lesson_id=item.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-sm btn-success" type="submit">Publish</button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">No unpublished lessons.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white"><h2 class="h6 mb-0">Unpublished Quizzes</h2></div>
+            <ul class="list-group list-group-flush">
+                {% for item in unpublished_quizzes %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ item.title }}</span>
+                    <form method="post" action="{{ url_for('teacher.toggle_quiz_publish', quiz_id=item.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-sm btn-success" type="submit">Publish</button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">No unpublished quizzes.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h2 class="h6 mb-0">Recently Published Sub-Courses</h2></div>
+            <ul class="list-group list-group-flush">
+                {% for item in published_sub_courses %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ item.title }}</span>
+                    <form method="post" action="{{ url_for('teacher.toggle_sub_course_publish', sub_course_id=item.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-sm btn-outline-warning" type="submit">Unpublish</button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">No published sub-courses.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h2 class="h6 mb-0">Recently Published Lessons</h2></div>
+            <ul class="list-group list-group-flush">
+                {% for item in published_lessons %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ item.title }}</span>
+                    <form method="post" action="{{ url_for('teacher.toggle_lesson_publish', lesson_id=item.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-sm btn-outline-warning" type="submit">Unpublish</button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">No published lessons.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h2 class="h6 mb-0">Recently Published Quizzes</h2></div>
+            <ul class="list-group list-group-flush">
+                {% for item in published_quizzes %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ item.title }}</span>
+                    <form method="post" action="{{ url_for('teacher.toggle_quiz_publish', quiz_id=item.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-sm btn-outline-warning" type="submit">Unpublish</button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="list-group-item text-muted">No published quizzes.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
