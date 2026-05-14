@@ -1,80 +1,62 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
+{% block title %}Admin Dashboard | LMS{% endblock %}
 
-{% block title %}Admin Dashboard | Flask LMS{% endblock %}
-
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Admin Dashboard</h1>
+{% block admin_content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Platform overview at a glance</p>
+    </div>
     {% if current_user.has_admin_permission('analytics') %}
-    <a class="btn btn-outline-primary" href="{{ url_for('admin.analytics') }}">Open Analytics</a>
+    <a href="{{ url_for('admin.analytics') }}" class="btn-secondary">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        View Analytics
+    </a>
     {% endif %}
 </div>
 
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 bg-primary text-white">
-            <div class="card-body">
-                <h2 class="h6 text-uppercase">Pending users</h2>
-                <div class="display-6">{{ pending_users_count }}</div>
-            </div>
-        </div>
+<!-- Metrics grid -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="metric-card">
+        <p class="metric-label">Pending Users</p>
+        <p class="metric-value">{{ pending_users_count }}</p>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 bg-success text-white">
-            <div class="card-body">
-                <h2 class="h6 text-uppercase">Main courses</h2>
-                <div class="display-6">{{ main_courses_count }}</div>
-            </div>
-        </div>
+    <div class="metric-card accent">
+        <p class="metric-label">Main Courses</p>
+        <p class="metric-value">{{ main_courses_count }}</p>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 bg-info text-white">
-            <div class="card-body">
-                <h2 class="h6 text-uppercase">Sub-courses</h2>
-                <div class="display-6">{{ sub_courses_count }}</div>
-            </div>
-        </div>
+    <div class="metric-card emerald">
+        <p class="metric-label">Sub-courses</p>
+        <p class="metric-value">{{ sub_courses_count }}</p>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 bg-secondary text-white">
-            <div class="card-body">
-                <h2 class="h6 text-uppercase">Quizzes</h2>
-                <div class="display-6">{{ quizzes_count }}</div>
-            </div>
-        </div>
+    <div class="metric-card amber">
+        <p class="metric-label">Quizzes</p>
+        <p class="metric-value">{{ quizzes_count }}</p>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 bg-dark text-white">
-            <div class="card-body">
-                <h2 class="h6 text-uppercase">Quiz Attempts</h2>
-                <div class="display-6">{{ attempts_count }}</div>
-            </div>
-        </div>
+    <div class="metric-card">
+        <p class="metric-label">Quiz Attempts</p>
+        <p class="metric-value">{{ attempts_count }}</p>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0" style="background:#0f766e;color:#fff;">
-            <div class="card-body">
-                <h2 class="h6 text-uppercase">Messages</h2>
-                <div class="display-6">{{ messages_count }}</div>
-            </div>
-        </div>
+    <div class="metric-card accent">
+        <p class="metric-label">Messages</p>
+        <p class="metric-value">{{ messages_count }}</p>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0" style="background:#0b4f96;color:#fff;">
-            <div class="card-body">
-                <h2 class="h6 text-uppercase">Active Subscriptions</h2>
-                <div class="display-6">{{ active_subscriptions_count }}</div>
-            </div>
-        </div>
+    <div class="metric-card emerald">
+        <p class="metric-label">Active Subscriptions</p>
+        <p class="metric-value">{{ active_subscriptions_count }}</p>
     </div>
 </div>
 
-<div class="card shadow-sm">
-    <div class="card-header bg-white">
-        <h2 class="h5 mb-0">Recent users</h2>
+<!-- Recent users table -->
+<div class="card">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <h2 class="font-semibold text-slate-800">Recent Users</h2>
+        <a href="{{ url_for('admin.manage_users') }}" class="text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors">View all →</a>
     </div>
-    <div class="table-responsive">
-        <table class="table table-hover mb-0">
+    <div class="overflow-x-auto">
+        <table class="data-table">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -87,20 +69,22 @@
             <tbody>
                 {% for user in recent_users %}
                 <tr>
-                    <td>{{ user.full_name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.role.value }}</td>
+                    <td class="font-medium text-slate-800">{{ user.full_name }}</td>
+                    <td class="text-slate-500">{{ user.email }}</td>
+                    <td><span class="badge badge-neutral capitalize">{{ user.role.value }}</span></td>
                     <td>
                         {% if user.is_approved %}
-                        <span class="badge bg-success">Yes</span>
+                        <span class="badge badge-success">Approved</span>
                         {% else %}
-                        <span class="badge bg-warning text-dark">No</span>
+                        <span class="badge badge-warning">Pending</span>
                         {% endif %}
                     </td>
-                    <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td class="text-slate-500 tabular-nums">{{ user.created_at.strftime('%Y-%m-%d') }}</td>
                 </tr>
                 {% else %}
-                <tr><td colspan="5" class="text-center text-muted py-4">No users yet.</td></tr>
+                <tr>
+                    <td colspan="5" class="text-center text-slate-400 py-10">No users yet.</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>

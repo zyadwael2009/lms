@@ -1,71 +1,75 @@
 {% extends 'base.html' %}
-
-{% block title %}Quiz Result | Flask LMS{% endblock %}
+{% block title %}Quiz Result | LMS{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-        <h1 class="h3 mb-0">Quiz Result: {{ attempt.quiz.title }}</h1>
-        <p class="text-muted mb-0">Submitted at {{ attempt.submitted_at.strftime('%Y-%m-%d %H:%M') if attempt.submitted_at else 'N/A' }}</p>
+<div class="max-w-2xl mx-auto">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">{{ attempt.quiz.title }}</h1>
+            <p class="page-subtitle">Submitted {{ attempt.submitted_at.strftime('%Y-%m-%d %H:%M') if attempt.submitted_at else 'N/A' }}</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ url_for('learning.my_results') }}" class="btn-secondary btn-sm">All Results</a>
+            <a href="{{ url_for('learning.sub_course_detail', sub_course_id=attempt.quiz.module.sub_course.id) }}" class="btn-secondary btn-sm">Sub-course</a>
+        </div>
     </div>
-    <div>
-        <a class="btn btn-outline-secondary" href="{{ url_for('learning.my_results') }}">All results</a>
-        <a class="btn btn-outline-primary" href="{{ url_for('learning.sub_course_detail', sub_course_id=attempt.quiz.module.sub_course.id) }}">Back to sub-course</a>
-    </div>
-</div>
 
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 bg-primary text-white">
-            <div class="card-body">
-                <div class="small text-uppercase">Score</div>
-                <div class="h3 mb-0">{{ '%.2f'|format(attempt.score) }} / {{ '%.2f'|format(attempt.max_score) }}</div>
+    <!-- Score summary -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="metric-card text-center">
+            <p class="metric-label">Score</p>
+            <p class="metric-value">{{ '%.0f'|format(attempt.score) }}<span class="text-base font-normal text-slate-400">/{{ '%.0f'|format(attempt.max_score) }}</span></p>
+        </div>
+        <div class="metric-card emerald text-center">
+            <p class="metric-label">Percentage</p>
+            <p class="metric-value">{{ '%.1f'|format(attempt.percentage) }}%</p>
+        </div>
+        <div class="metric-card accent text-center">
+            <p class="metric-label">Status</p>
+            <p class="text-lg font-semibold text-slate-700 mt-1 capitalize">{{ attempt.status.value|replace('_', ' ')|title }}</p>
+        </div>
+    </div>
+
+    <!-- Question breakdown -->
+    <div class="flex flex-col gap-3">
+        {% for question in attempt.quiz.questions %}
+        {% set answer = answer_lookup.get(question.id) %}
+        <div class="card p-5">
+            <div class="flex items-start gap-3 mb-3">
+                {% if answer and answer.is_correct %}
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </span>
+                {% else %}
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-red-100 flex items-center justify-center">
+                    <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </span>
+                {% endif %}
+                <div class="flex-1 min-w-0">
+                    <p class="font-medium text-slate-800 text-sm leading-snug">{{ question.prompt }}</p>
+                    {% if answer %}
+                    <div class="mt-2 text-sm">
+                        {% if answer.selected_option %}
+                        <span class="text-slate-500">Your answer: </span><span class="font-medium text-slate-700">{{ answer.selected_option.option_text }}</span>
+                        {% elif answer.text_answer %}
+                        <span class="text-slate-500">Your answer: </span><span class="font-medium text-slate-700">{{ answer.text_answer }}</span>
+                        {% else %}
+                        <span class="text-slate-400 italic">No answer submitted.</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">Points: {{ '%.2f'|format(answer.points_awarded) }} / {{ '%.2f'|format(question.points) }}</p>
+                    {% else %}
+                    <p class="text-xs text-slate-400 mt-1">No answer recorded.</p>
+                    {% endif %}
+                </div>
+                {% if answer and answer.is_correct %}
+                <span class="badge badge-success flex-shrink-0">Correct</span>
+                {% else %}
+                <span class="badge badge-danger flex-shrink-0">Incorrect</span>
+                {% endif %}
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 bg-success text-white">
-            <div class="card-body">
-                <div class="small text-uppercase">Percentage</div>
-                <div class="h3 mb-0">{{ '%.1f'|format(attempt.percentage) }}%</div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 bg-info text-white">
-            <div class="card-body">
-                <div class="small text-uppercase">Status</div>
-                <div class="h3 mb-0">{{ attempt.status.value|replace('_', ' ')|title }}</div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </div>
-
-{% for question in attempt.quiz.questions %}
-{% set answer = answer_lookup.get(question.id) %}
-<div class="card shadow-sm mb-3">
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <h2 class="h6 mb-0">Question {{ loop.index }}</h2>
-            <span class="badge {% if answer and answer.is_correct %}bg-success{% else %}bg-danger{% endif %}">
-                {% if answer and answer.is_correct %}Correct{% else %}Incorrect{% endif %}
-            </span>
-        </div>
-        <p>{{ question.prompt }}</p>
-
-        {% if answer %}
-            {% if answer.selected_option %}
-            <div><strong>Your answer:</strong> {{ answer.selected_option.option_text }}</div>
-            {% elif answer.text_answer %}
-            <div><strong>Your answer:</strong> {{ answer.text_answer }}</div>
-            {% else %}
-            <div><strong>Your answer:</strong> No answer submitted.</div>
-            {% endif %}
-            <div class="small text-muted">Points awarded: {{ '%.2f'|format(answer.points_awarded) }} / {{ '%.2f'|format(question.points) }}</div>
-        {% else %}
-            <div class="small text-muted">No answer recorded.</div>
-        {% endif %}
-    </div>
-</div>
-{% endfor %}
 {% endblock %}

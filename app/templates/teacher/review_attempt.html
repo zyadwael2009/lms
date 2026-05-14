@@ -1,51 +1,53 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
+{% block title %}Review Attempt | LMS{% endblock %}
 
-{% block title %}Review Attempt | Flask LMS{% endblock %}
-
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
+{% block admin_content %}
+<div class="page-header">
     <div>
-        <h1 class="h3 mb-0">Review Attempt #{{ attempt.id }}</h1>
-        <div class="text-muted">{{ attempt.user.full_name }} | {{ attempt.quiz.title }}</div>
+        <h1 class="page-title">Review Attempt #{{ attempt.id }}</h1>
+        <p class="page-subtitle">{{ attempt.user.full_name }} — {{ attempt.quiz.title }}</p>
     </div>
-    <a class="btn btn-outline-secondary" href="{{ url_for('teacher.attempts') }}">Back to attempts</a>
+    <a href="{{ url_for('teacher.attempts') }}" class="btn-secondary btn-sm">← All Attempts</a>
 </div>
 
-<form method="post">
+<form method="post" class="flex flex-col gap-4">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     {% for answer in attempt.answers %}
-    <div class="card shadow-sm mb-3">
-        <div class="card-body">
-            <h2 class="h6">Question {{ loop.index }}</h2>
-            <p class="mb-2">{{ answer.question.prompt }}</p>
-
-            <div class="small mb-2">
-                {% if answer.selected_option %}
-                Student answer: <strong>{{ answer.selected_option.option_text }}</strong>
-                {% elif answer.text_answer %}
-                Student answer: <strong>{{ answer.text_answer }}</strong>
-                {% else %}
-                Student answer: <strong>No answer</strong>
-                {% endif %}
-            </div>
-
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label">Points (max {{ answer.question.points }})</label>
-                    <input class="form-control" type="number" step="0.01" min="0" max="{{ answer.question.points }}" name="points_{{ answer.id }}" value="{{ answer.points_awarded }}">
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="correct_{{ answer.id }}" name="correct_{{ answer.id }}" {% if answer.is_correct %}checked{% endif %}>
-                        <label class="form-check-label" for="correct_{{ answer.id }}">Mark as correct</label>
-                    </div>
+    <div class="card p-5">
+        <div class="flex items-start gap-3 mb-4">
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">{{ loop.index }}</span>
+            <div>
+                <p class="font-medium text-slate-800 leading-snug">{{ answer.question.prompt }}</p>
+                <div class="mt-2 text-sm">
+                    {% if answer.selected_option %}
+                    <span class="text-slate-500">Student answered: </span>
+                    <span class="font-semibold text-slate-800">{{ answer.selected_option.option_text }}</span>
+                    {% elif answer.text_answer %}
+                    <span class="text-slate-500">Student answered: </span>
+                    <span class="font-semibold text-slate-800">{{ answer.text_answer }}</span>
+                    {% else %}
+                    <span class="text-slate-400 italic">No answer provided.</span>
+                    {% endif %}
                 </div>
             </div>
+        </div>
+
+        <div class="flex items-center gap-6 pl-10">
+            <div class="form-field">
+                <label class="form-label">Points (max {{ answer.question.points }})</label>
+                <input class="form-input" style="max-width:120px;" type="number" step="0.01" min="0" max="{{ answer.question.points }}" name="points_{{ answer.id }}" value="{{ answer.points_awarded }}">
+            </div>
+            <label class="flex items-center gap-2.5 cursor-pointer mt-5">
+                <input class="w-4 h-4 text-brand-600 rounded" type="checkbox" id="correct_{{ answer.id }}" name="correct_{{ answer.id }}" {% if answer.is_correct %}checked{% endif %}>
+                <span class="text-sm font-medium text-slate-700">Mark as correct</span>
+            </label>
         </div>
     </div>
     {% endfor %}
 
-    <button class="btn btn-success" type="submit">Save Overrides</button>
+    <div>
+        <button type="submit" class="btn-primary btn-lg">Save Overrides</button>
+    </div>
 </form>
 {% endblock %}

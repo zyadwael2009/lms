@@ -1,127 +1,137 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
+{% block title %}Content Workflow | LMS{% endblock %}
 
-{% block title %}Content Workflow | Flask LMS{% endblock %}
-
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">Content Publishing Workflow</h1>
-    <a class="btn btn-outline-secondary" href="{{ url_for('teacher.dashboard') }}">Back to teacher dashboard</a>
+{% block admin_content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Content Workflow</h1>
+        <p class="page-subtitle">Publish or unpublish course content</p>
+    </div>
+    <a href="{{ url_for('teacher.dashboard') }}" class="btn-secondary btn-sm">← Teaching Tools</a>
 </div>
 
-<div class="row g-4">
-    <div class="col-lg-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white"><h2 class="h6 mb-0">Unpublished Sub-Courses</h2></div>
-            <ul class="list-group list-group-flush">
-                {% for item in unpublished_sub_courses %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ item.title }}</span>
-                    <form method="post" action="{{ url_for('teacher.toggle_sub_course_publish', sub_course_id=item.id) }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button class="btn btn-sm btn-success" type="submit">Publish</button>
-                    </form>
-                </li>
-                {% else %}
-                <li class="list-group-item text-muted">No unpublished sub-courses.</li>
-                {% endfor %}
-            </ul>
+<!-- Unpublished section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
+    <div class="card">
+        <div class="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <h2 class="font-semibold text-slate-800 text-sm">Unpublished Sub-Courses</h2>
+        </div>
+        <div class="px-5 py-2">
+            {% for item in unpublished_sub_courses %}
+            <div class="flex items-center justify-between gap-3 py-2.5 border-b border-slate-50 last:border-0">
+                <span class="text-sm text-slate-700 truncate">{{ item.title }}</span>
+                <form method="post" action="{{ url_for('teacher.toggle_sub_course_publish', sub_course_id=item.id) }}" class="flex-shrink-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-primary btn-sm">Publish</button>
+                </form>
+            </div>
+            {% else %}
+            <p class="text-sm text-slate-400 py-3">No unpublished sub-courses.</p>
+            {% endfor %}
         </div>
     </div>
 
-    <div class="col-lg-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white"><h2 class="h6 mb-0">Unpublished Lessons</h2></div>
-            <ul class="list-group list-group-flush">
-                {% for item in unpublished_lessons %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ item.title }}</span>
-                    <form method="post" action="{{ url_for('teacher.toggle_lesson_publish', lesson_id=item.id) }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button class="btn btn-sm btn-success" type="submit">Publish</button>
-                    </form>
-                </li>
-                {% else %}
-                <li class="list-group-item text-muted">No unpublished lessons.</li>
-                {% endfor %}
-            </ul>
+    <div class="card">
+        <div class="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <h2 class="font-semibold text-slate-800 text-sm">Unpublished Lessons</h2>
+        </div>
+        <div class="px-5 py-2">
+            {% for item in unpublished_lessons %}
+            <div class="flex items-center justify-between gap-3 py-2.5 border-b border-slate-50 last:border-0">
+                <span class="text-sm text-slate-700 truncate">{{ item.title }}</span>
+                <form method="post" action="{{ url_for('teacher.toggle_lesson_publish', lesson_id=item.id) }}" class="flex-shrink-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-primary btn-sm">Publish</button>
+                </form>
+            </div>
+            {% else %}
+            <p class="text-sm text-slate-400 py-3">No unpublished lessons.</p>
+            {% endfor %}
         </div>
     </div>
 
-    <div class="col-lg-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white"><h2 class="h6 mb-0">Unpublished Quizzes</h2></div>
-            <ul class="list-group list-group-flush">
-                {% for item in unpublished_quizzes %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ item.title }}</span>
-                    <form method="post" action="{{ url_for('teacher.toggle_quiz_publish', quiz_id=item.id) }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button class="btn btn-sm btn-success" type="submit">Publish</button>
-                    </form>
-                </li>
-                {% else %}
-                <li class="list-group-item text-muted">No unpublished quizzes.</li>
-                {% endfor %}
-            </ul>
+    <div class="card">
+        <div class="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <h2 class="font-semibold text-slate-800 text-sm">Unpublished Quizzes</h2>
+        </div>
+        <div class="px-5 py-2">
+            {% for item in unpublished_quizzes %}
+            <div class="flex items-center justify-between gap-3 py-2.5 border-b border-slate-50 last:border-0">
+                <span class="text-sm text-slate-700 truncate">{{ item.title }}</span>
+                <form method="post" action="{{ url_for('teacher.toggle_quiz_publish', quiz_id=item.id) }}" class="flex-shrink-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-primary btn-sm">Publish</button>
+                </form>
+            </div>
+            {% else %}
+            <p class="text-sm text-slate-400 py-3">No unpublished quizzes.</p>
+            {% endfor %}
         </div>
     </div>
 </div>
 
-<div class="row g-4 mt-1">
-    <div class="col-lg-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white"><h2 class="h6 mb-0">Recently Published Sub-Courses</h2></div>
-            <ul class="list-group list-group-flush">
-                {% for item in published_sub_courses %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ item.title }}</span>
-                    <form method="post" action="{{ url_for('teacher.toggle_sub_course_publish', sub_course_id=item.id) }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button class="btn btn-sm btn-outline-warning" type="submit">Unpublish</button>
-                    </form>
-                </li>
-                {% else %}
-                <li class="list-group-item text-muted">No published sub-courses.</li>
-                {% endfor %}
-            </ul>
+<!-- Published section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="card">
+        <div class="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <h2 class="font-semibold text-slate-800 text-sm">Published Sub-Courses</h2>
+        </div>
+        <div class="px-5 py-2">
+            {% for item in published_sub_courses %}
+            <div class="flex items-center justify-between gap-3 py-2.5 border-b border-slate-50 last:border-0">
+                <span class="text-sm text-slate-700 truncate">{{ item.title }}</span>
+                <form method="post" action="{{ url_for('teacher.toggle_sub_course_publish', sub_course_id=item.id) }}" class="flex-shrink-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-secondary btn-sm">Unpublish</button>
+                </form>
+            </div>
+            {% else %}
+            <p class="text-sm text-slate-400 py-3">No published sub-courses.</p>
+            {% endfor %}
         </div>
     </div>
 
-    <div class="col-lg-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white"><h2 class="h6 mb-0">Recently Published Lessons</h2></div>
-            <ul class="list-group list-group-flush">
-                {% for item in published_lessons %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ item.title }}</span>
-                    <form method="post" action="{{ url_for('teacher.toggle_lesson_publish', lesson_id=item.id) }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button class="btn btn-sm btn-outline-warning" type="submit">Unpublish</button>
-                    </form>
-                </li>
-                {% else %}
-                <li class="list-group-item text-muted">No published lessons.</li>
-                {% endfor %}
-            </ul>
+    <div class="card">
+        <div class="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <h2 class="font-semibold text-slate-800 text-sm">Published Lessons</h2>
+        </div>
+        <div class="px-5 py-2">
+            {% for item in published_lessons %}
+            <div class="flex items-center justify-between gap-3 py-2.5 border-b border-slate-50 last:border-0">
+                <span class="text-sm text-slate-700 truncate">{{ item.title }}</span>
+                <form method="post" action="{{ url_for('teacher.toggle_lesson_publish', lesson_id=item.id) }}" class="flex-shrink-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-secondary btn-sm">Unpublish</button>
+                </form>
+            </div>
+            {% else %}
+            <p class="text-sm text-slate-400 py-3">No published lessons.</p>
+            {% endfor %}
         </div>
     </div>
 
-    <div class="col-lg-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white"><h2 class="h6 mb-0">Recently Published Quizzes</h2></div>
-            <ul class="list-group list-group-flush">
-                {% for item in published_quizzes %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ item.title }}</span>
-                    <form method="post" action="{{ url_for('teacher.toggle_quiz_publish', quiz_id=item.id) }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button class="btn btn-sm btn-outline-warning" type="submit">Unpublish</button>
-                    </form>
-                </li>
-                {% else %}
-                <li class="list-group-item text-muted">No published quizzes.</li>
-                {% endfor %}
-            </ul>
+    <div class="card">
+        <div class="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <h2 class="font-semibold text-slate-800 text-sm">Published Quizzes</h2>
+        </div>
+        <div class="px-5 py-2">
+            {% for item in published_quizzes %}
+            <div class="flex items-center justify-between gap-3 py-2.5 border-b border-slate-50 last:border-0">
+                <span class="text-sm text-slate-700 truncate">{{ item.title }}</span>
+                <form method="post" action="{{ url_for('teacher.toggle_quiz_publish', quiz_id=item.id) }}" class="flex-shrink-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-secondary btn-sm">Unpublish</button>
+                </form>
+            </div>
+            {% else %}
+            <p class="text-sm text-slate-400 py-3">No published quizzes.</p>
+            {% endfor %}
         </div>
     </div>
 </div>

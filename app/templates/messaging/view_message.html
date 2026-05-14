@@ -1,23 +1,39 @@
 {% extends 'base.html' %}
-
-{% block title %}Message | Flask LMS{% endblock %}
+{% block title %}{{ message.subject or 'Message' }} | LMS{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h4 mb-0">{{ message.subject or '(No subject)' }}</h1>
-    <div class="d-flex gap-2">
-        <a class="btn btn-outline-secondary" href="{{ url_for('messaging.inbox') }}">Inbox</a>
-        <a class="btn btn-outline-secondary" href="{{ url_for('messaging.sent_messages') }}">Sent</a>
+<div class="max-w-2xl">
+    <div class="page-header">
+        <h1 class="page-title">{{ message.subject or '(No subject)' }}</h1>
+        <div class="flex gap-2">
+            <a href="{{ url_for('messaging.inbox') }}" class="btn-secondary btn-sm">Inbox</a>
+            <a href="{{ url_for('messaging.sent_messages') }}" class="btn-secondary btn-sm">Sent</a>
+        </div>
     </div>
-</div>
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <div class="mb-2"><strong>From:</strong> {{ message.sender.full_name }} ({{ message.sender.email }})</div>
-        <div class="mb-2"><strong>To:</strong> {{ message.receiver.full_name }} ({{ message.receiver.email }})</div>
-        <div class="mb-3"><strong>Date:</strong> {{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
-        <hr>
-        <p class="mb-0" style="white-space: pre-line;">{{ message.body }}</p>
+    <div class="card overflow-hidden">
+        <!-- Message meta -->
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex flex-col gap-1.5">
+            <div class="flex items-center gap-2 text-sm">
+                <span class="text-slate-400 w-10">From</span>
+                <span class="font-medium text-slate-800">{{ message.sender.full_name }}</span>
+                <span class="text-slate-400">{{ message.sender.email }}</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+                <span class="text-slate-400 w-10">To</span>
+                <span class="font-medium text-slate-800">{{ message.receiver.full_name }}</span>
+                <span class="text-slate-400">{{ message.receiver.email }}</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+                <span class="text-slate-400 w-10">Date</span>
+                <span class="text-slate-600 tabular-nums">{{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
+        </div>
+
+        <!-- Message body -->
+        <div class="px-6 py-6">
+            <p class="text-slate-700 leading-relaxed whitespace-pre-line">{{ message.body }}</p>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -1,76 +1,78 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
+{% block title %}Manage Courses | LMS{% endblock %}
 
-{% block title %}Manage Courses | Flask LMS{% endblock %}
+{% block admin_content %}
+<div class="page-header">
+    <h1 class="page-title">Courses</h1>
+</div>
 
-{% block content %}
-<div class="row g-4">
-    <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h1 class="h4 mb-3">Create Main Course</h1>
-                <form method="post" novalidate>
-                    {{ form.hidden_tag() }}
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
 
-                    <div class="mb-3">
-                        {{ form.title.label(class='form-label') }}
-                        {{ form.title(class='form-control', placeholder='Main course title') }}
-                        {% for error in form.title.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+    <!-- Create form -->
+    <div class="lg:col-span-2">
+        <div class="card p-6">
+            <h2 class="font-semibold text-slate-800 mb-5">Create Main Course</h2>
+            <form method="post" novalidate class="flex flex-col gap-4">
+                {{ form.hidden_tag() }}
 
-                    <div class="mb-3">
-                        {{ form.description.label(class='form-label') }}
-                        {{ form.description(class='form-control', rows='4', placeholder='Description') }}
-                        {% for error in form.description.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+                <div class="form-field">
+                    {{ form.title.label(class='form-label') }}
+                    {{ form.title(class='form-input' + (' is-invalid' if form.title.errors else ''), placeholder='Main course title') }}
+                    {% for error in form.title.errors %}
+                    <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
 
-                    <div class="mb-3">
-                        {{ form.access_code.label(class='form-label') }}
-                        {{ form.access_code(class='form-control', placeholder='Optional custom code') }}
-                        <div class="form-text">{{ form.access_code.description }}</div>
-                        {% for error in form.access_code.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+                <div class="form-field">
+                    {{ form.description.label(class='form-label') }}
+                    {{ form.description(class='form-textarea', rows='3', placeholder='Course description…') }}
+                    {% for error in form.description.errors %}
+                    <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
 
-                    {{ form.submit(class='btn btn-primary w-100') }}
+                <div class="form-field">
+                    {{ form.access_code.label(class='form-label') }}
+                    {{ form.access_code(class='form-input' + (' is-invalid' if form.access_code.errors else ''), placeholder='Optional custom code') }}
+                    {% if form.access_code.description %}
+                    <p class="form-hint">{{ form.access_code.description }}</p>
+                    {% endif %}
+                    {% for error in form.access_code.errors %}
+                    <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                {{ form.submit(class='btn-primary w-full justify-center mt-1') }}
+            </form>
+        </div>
+    </div>
+
+    <!-- Courses list -->
+    <div class="lg:col-span-3 flex flex-col gap-3">
+        {% for main_course in main_courses %}
+        <div class="card p-5 flex items-start justify-between gap-4">
+            <div class="min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                    <h3 class="font-semibold text-slate-800 truncate">{{ main_course.title }}</h3>
+                    <span class="badge badge-brand flex-shrink-0">{{ main_course.access_code }}</span>
+                </div>
+                <p class="text-sm text-slate-500 line-clamp-2">{{ main_course.description or 'No description.' }}</p>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <a href="{{ url_for('admin.manage_sub_courses', main_course_id=main_course.id) }}" class="btn-secondary btn-sm">Sub-courses</a>
+                <a href="{{ url_for('admin.edit_course', main_course_id=main_course.id) }}" class="btn-ghost btn-sm">Edit</a>
+                <form method="post" action="{{ url_for('admin.delete_course', main_course_id=main_course.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-danger btn-sm">Delete</button>
                 </form>
             </div>
         </div>
+        {% else %}
+        <div class="card p-10 text-center text-slate-400">
+            <p class="text-sm">No main courses created yet.</p>
+        </div>
+        {% endfor %}
     </div>
 
-    <div class="col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h2 class="h5 mb-0">Main Courses</h2>
-            </div>
-            <div class="list-group list-group-flush">
-                {% for main_course in main_courses %}
-                <div class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h3 class="h6 mb-1">{{ main_course.title }}</h3>
-                            <div class="small text-muted mb-1">{{ main_course.description or 'No description.' }}</div>
-                            <span class="badge bg-secondary">Code: {{ main_course.access_code }}</span>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.manage_sub_courses', main_course_id=main_course.id) }}">Sub-courses</a>
-                            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.edit_course', main_course_id=main_course.id) }}">Edit</a>
-                            <form method="post" action="{{ url_for('admin.delete_course', main_course_id=main_course.id) }}">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-                <div class="list-group-item text-muted">No main courses created yet.</div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
 </div>
 {% endblock %}

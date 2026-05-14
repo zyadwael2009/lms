@@ -1,81 +1,85 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
+{% block title %}Manage Users | LMS{% endblock %}
 
-{% block title %}Manage Users | Flask LMS{% endblock %}
-
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">Manage Users</h1>
-    <div class="d-flex gap-2">
-        <a class="btn btn-outline-primary" href="{{ url_for('admin.manage_enrollments') }}">Enrollments</a>
-        <a class="btn btn-outline-primary" href="{{ url_for('admin.manage_parent_links') }}">Parent Links</a>
+{% block admin_content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Manage Users</h1>
+        <p class="page-subtitle">Search, filter, and edit user accounts</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{{ url_for('admin.manage_enrollments') }}" class="btn-secondary btn-sm">Enrollments</a>
+        <a href="{{ url_for('admin.manage_parent_links') }}" class="btn-secondary btn-sm">Parent Links</a>
     </div>
 </div>
 
-<form method="get" class="card shadow-sm mb-3">
-    <div class="card-body row g-2 align-items-end">
-        <div class="col-md-5">
+<!-- Filter form -->
+<form method="get" class="card p-4 mb-5">
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+        <div class="form-field sm:col-span-2">
             <label class="form-label">Search</label>
-            <input class="form-control" type="text" name="q" value="{{ search }}" placeholder="Name or email">
+            <input class="form-input" type="text" name="q" value="{{ search }}" placeholder="Name or email…">
         </div>
-        <div class="col-md-3">
+        <div class="form-field">
             <label class="form-label">Role</label>
             <select class="form-select" name="role">
                 <option value="" {% if not role_filter %}selected{% endif %}>All roles</option>
-                <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="admin"   {% if role_filter == 'admin' %}selected{% endif %}>Admin</option>
                 <option value="student" {% if role_filter == 'student' %}selected{% endif %}>Student</option>
-                <option value="parent" {% if role_filter == 'parent' %}selected{% endif %}>Parent</option>
+                <option value="parent"  {% if role_filter == 'parent' %}selected{% endif %}>Parent</option>
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="form-field">
             <label class="form-label">Status</label>
             <select class="form-select" name="status">
-                <option value="" {% if not status_filter %}selected{% endif %}>All statuses</option>
+                <option value=""         {% if not status_filter %}selected{% endif %}>All statuses</option>
                 <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
-                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="pending"  {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
                 <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
             </select>
         </div>
-        <div class="col-md-1">
-            <button class="btn btn-primary w-100" type="submit">Go</button>
-        </div>
+        <button class="btn-primary self-end" type="submit">Filter</button>
     </div>
 </form>
 
-<div class="card shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover mb-0 align-middle">
+<!-- Users table -->
+<div class="card">
+    <div class="overflow-x-auto">
+        <table class="data-table">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
-                    <th>Access</th>
+                    <th>Access Level</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td>{{ user.full_name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.role.value }}</td>
-                    <td>{{ user.admin_access_level.value if user.role.value == 'admin' else '-' }}</td>
+                    <td class="font-medium text-slate-800">{{ user.full_name }}</td>
+                    <td class="text-slate-500">{{ user.email }}</td>
+                    <td><span class="badge badge-neutral capitalize">{{ user.role.value }}</span></td>
+                    <td class="text-slate-500">{{ user.admin_access_level.value if user.role.value == 'admin' else '—' }}</td>
                     <td>
                         {% if not user.is_active %}
-                        <span class="badge bg-secondary">Inactive</span>
+                        <span class="badge badge-neutral">Inactive</span>
                         {% elif user.is_approved %}
-                        <span class="badge bg-success">Approved</span>
+                        <span class="badge badge-success">Approved</span>
                         {% else %}
-                        <span class="badge bg-warning text-dark">Pending</span>
+                        <span class="badge badge-warning">Pending</span>
                         {% endif %}
                     </td>
                     <td>
-                        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.edit_user', user_id=user.id) }}">Edit</a>
+                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn-secondary btn-sm">Edit</a>
                     </td>
                 </tr>
                 {% else %}
-                <tr><td colspan="6" class="text-center text-muted py-4">No users found.</td></tr>
+                <tr>
+                    <td colspan="6" class="text-center text-slate-400 py-10">No users found.</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>

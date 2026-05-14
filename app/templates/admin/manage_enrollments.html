@@ -1,36 +1,40 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
+{% block title %}Manage Enrollments | LMS{% endblock %}
 
-{% block title %}Manage Enrollments | Flask LMS{% endblock %}
+{% block admin_content %}
+<div class="page-header">
+    <h1 class="page-title">Manage Enrollments</h1>
+</div>
 
-{% block content %}
-<div class="row g-4">
-    <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h1 class="h5 mb-3">Add Enrollment</h1>
-                <form method="post" novalidate>
-                    {{ form.hidden_tag() }}
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
 
-                    <div class="mb-3">
-                        {{ form.user_id.label(class='form-label') }}
-                        {{ form.user_id(class='form-select') }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.main_course_id.label(class='form-label') }}
-                        {{ form.main_course_id(class='form-select') }}
-                    </div>
-
-                    {{ form.submit(class='btn btn-primary w-100') }}
-                </form>
-            </div>
+    <!-- Add enrollment form -->
+    <div class="lg:col-span-2">
+        <div class="card p-6">
+            <h2 class="font-semibold text-slate-800 mb-5">Add Enrollment</h2>
+            <form method="post" novalidate class="flex flex-col gap-4">
+                {{ form.hidden_tag() }}
+                <div class="form-field">
+                    {{ form.user_id.label(class='form-label') }}
+                    {{ form.user_id(class='form-select') }}
+                </div>
+                <div class="form-field">
+                    {{ form.main_course_id.label(class='form-label') }}
+                    {{ form.main_course_id(class='form-select') }}
+                </div>
+                {{ form.submit(class='btn-primary w-full justify-center mt-1') }}
+            </form>
         </div>
     </div>
 
-    <div class="col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white"><h2 class="h6 mb-0">Current Enrollments</h2></div>
-            <div class="table-responsive">
-                <table class="table table-striped mb-0 align-middle">
+    <!-- Enrollments table -->
+    <div class="lg:col-span-3">
+        <div class="card">
+            <div class="px-6 py-4 border-b border-slate-100">
+                <h2 class="font-semibold text-slate-800">Current Enrollments</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>User</th>
@@ -42,23 +46,26 @@
                     <tbody>
                         {% for enrollment in enrollments %}
                         <tr>
-                            <td>{{ enrollment.user.full_name }}</td>
-                            <td>{{ enrollment.main_course.title }}</td>
-                            <td>{{ enrollment.source }}</td>
+                            <td class="font-medium text-slate-800">{{ enrollment.user.full_name }}</td>
+                            <td class="text-slate-600">{{ enrollment.main_course.title }}</td>
+                            <td><span class="badge badge-neutral">{{ enrollment.source }}</span></td>
                             <td>
                                 <form method="post" action="{{ url_for('admin.delete_enrollment', enrollment_id=enrollment.id) }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button class="btn btn-sm btn-outline-danger" type="submit">Remove</button>
+                                    <button type="submit" class="btn-danger btn-sm">Remove</button>
                                 </form>
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="4" class="text-center text-muted py-4">No enrollments yet.</td></tr>
+                        <tr>
+                            <td colspan="4" class="text-center text-slate-400 py-10">No enrollments yet.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
 </div>
 {% endblock %}

@@ -1,59 +1,119 @@
 {% extends 'base.html' %}
-
-{% block title %}Home | Flask LMS{% endblock %}
+{% block title %}Home | LMS{% endblock %}
 
 {% block content %}
+
 {% if not current_user.is_authenticated %}
-<div class="p-5 mb-4 bg-light rounded-3 border">
-    <div class="container-fluid py-2">
-        <h1 class="display-6 fw-bold">Learning Management System</h1>
-        <p class="col-md-9 fs-5">
-            Register as a student or parent. If you have a main course code during registration,
-            all sub-courses under that main course become available after admin approval.
-        </p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('auth.register') }}">Create account</a>
+<!-- ─── Hero (unauthenticated) ───────────────────────── -->
+<div class="max-w-3xl mx-auto text-center py-20">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100 text-brand-600 text-xs font-semibold uppercase tracking-wider mb-6">
+        Learning Management System
+    </div>
+    <h1 class="text-5xl font-bold text-slate-900 tracking-tight leading-tight mb-5">
+        Your courses,<br>organized and accessible.
+    </h1>
+    <p class="text-lg text-slate-500 leading-relaxed mb-8 max-w-xl mx-auto">
+        Register as a student or parent. If you have a main course code, all sub-courses become available after admin approval.
+    </p>
+    <div class="flex items-center justify-center gap-3">
+        <a href="{{ url_for('auth.register') }}" class="btn-primary btn-lg">Create account</a>
+        <a href="{{ url_for('auth.login') }}" class="btn-secondary btn-lg">Sign in</a>
     </div>
 </div>
+
 {% elif current_user.is_admin %}
-<div class="alert alert-info">
-    You are signed in as admin. Use the navigation menu to manage users and courses.
-</div>
-{% else %}
-<h1 class="h3 mb-3">My Courses</h1>
-
-{% if enrolled_main_courses %}
-    {% for main_course in enrolled_main_courses %}
-    <div class="card mb-3 shadow-sm">
-        <div class="card-body">
-            <h2 class="h5 mb-1">{{ main_course.title }}</h2>
-            <p class="text-muted mb-2">{{ main_course.description or 'No description yet.' }}</p>
-            <div class="small mb-3">
-                Main course code: <span class="badge bg-secondary">{{ main_course.access_code }}</span>
+<!-- ─── Admin welcome ─────────────────────────────────── -->
+<div class="max-w-2xl">
+    <div class="card p-6 flex items-start gap-4">
+        <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+        </div>
+        <div>
+            <h2 class="font-semibold text-slate-900 mb-1">Admin account</h2>
+            <p class="text-sm text-slate-500 leading-relaxed">
+                You're signed in as <span class="font-medium text-slate-700">{{ current_user.full_name }}</span>. Use the navigation to manage users, courses, and platform settings.
+            </p>
+            <div class="flex gap-2 mt-4">
+                <a href="{{ url_for('admin.dashboard') }}" class="btn-primary btn-sm">Admin Dashboard</a>
+                <a href="{{ url_for('teacher.dashboard') }}" class="btn-secondary btn-sm">Teaching Tools</a>
             </div>
-
-            <h3 class="h6">Sub-courses</h3>
-            {% if main_course.sub_courses %}
-            <ul class="list-group list-group-flush">
-                {% for sub_course in main_course.sub_courses %}
-                <li class="list-group-item px-0">
-                    <a class="text-decoration-none" href="{{ url_for('learning.sub_course_detail', sub_course_id=sub_course.id) }}">
-                        <strong>{{ sub_course.title }}</strong>
-                    </a>
-                    <div class="small text-muted">{{ sub_course.description or 'No description.' }}</div>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p class="text-muted small mb-0">No sub-courses added yet.</p>
-            {% endif %}
         </div>
     </div>
-    {% endfor %}
+</div>
+
 {% else %}
-<div class="alert alert-warning">
-    You do not have any enrolled main course yet. Ask admin for a main course code and use it during registration,
-    or ask admin to enroll you manually.
+<!-- ─── Student dashboard ─────────────────────────────── -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">My Courses</h1>
+        <p class="page-subtitle">Welcome back, {{ current_user.full_name }}</p>
+    </div>
+</div>
+
+{% if enrolled_main_courses %}
+<div class="flex flex-col gap-6">
+    {% for main_course in enrolled_main_courses %}
+    <div class="card p-6">
+        <!-- Course header -->
+        <div class="flex items-start justify-between gap-4 mb-4">
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900 tracking-tight">{{ main_course.title }}</h2>
+                <p class="text-sm text-slate-500 mt-0.5">{{ main_course.description or 'No description provided.' }}</p>
+            </div>
+            <span class="badge badge-brand flex-shrink-0">{{ main_course.access_code }}</span>
+        </div>
+
+        <!-- Sub-courses -->
+        {% if main_course.sub_courses %}
+        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Sub-courses</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {% for sub_course in main_course.sub_courses %}
+            <a href="{{ url_for('learning.sub_course_detail', sub_course_id=sub_course.id) }}"
+               class="group flex flex-col gap-1.5 p-4 rounded-xl border border-slate-200 hover:border-brand-200 hover:bg-brand-50/50 transition-all duration-150">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-slate-100 group-hover:bg-brand-100 flex items-center justify-center transition-colors">
+                        <svg class="w-3.5 h-3.5 text-slate-500 group-hover:text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-slate-800 group-hover:text-brand-700 transition-colors">{{ sub_course.title }}</span>
+                </div>
+                {% if sub_course.description %}
+                <p class="text-xs text-slate-500 leading-relaxed pl-9 line-clamp-2">{{ sub_course.description }}</p>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="flex items-center gap-2 text-sm text-slate-400 py-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+            No sub-courses added yet.
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<!-- No enrollments -->
+<div class="max-w-md">
+    <div class="card p-8 text-center">
+        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-amber-50 flex items-center justify-center">
+            <svg class="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+        </div>
+        <h3 class="font-semibold text-slate-800 mb-2">No courses enrolled</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">
+            You don't have any enrolled courses yet. Ask an admin for a main course code and use it during registration, or ask admin to enroll you manually.
+        </p>
+    </div>
 </div>
 {% endif %}
+
 {% endif %}
 {% endblock %}

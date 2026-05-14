@@ -1,16 +1,15 @@
 {% extends 'base.html' %}
-
-{% block title %}My Results | Flask LMS{% endblock %}
+{% block title %}My Results | LMS{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">My Quiz Results</h1>
-    <a class="btn btn-outline-secondary" href="{{ url_for('main.my_courses') }}">Back to courses</a>
+<div class="page-header">
+    <h1 class="page-title">My Quiz Results</h1>
+    <a href="{{ url_for('main.my_courses') }}" class="btn-secondary btn-sm">← Courses</a>
 </div>
 
-<div class="card shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover mb-0 align-middle">
+<div class="card">
+    <div class="overflow-x-auto">
+        <table class="data-table">
             <thead>
                 <tr>
                     <th>Quiz</th>
@@ -18,24 +17,29 @@
                     <th>Score</th>
                     <th>Percentage</th>
                     <th>Submitted</th>
-                    <th>Action</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for attempt in attempts %}
                 <tr>
-                    <td>{{ attempt.quiz.title }}</td>
-                    <td>{{ attempt.quiz.module.title }}</td>
-                    <td>{{ '%.2f'|format(attempt.score) }} / {{ '%.2f'|format(attempt.max_score) }}</td>
-                    <td>{{ '%.1f'|format(attempt.percentage) }}%</td>
-                    <td>{{ attempt.submitted_at.strftime('%Y-%m-%d %H:%M') if attempt.submitted_at else 'In progress' }}</td>
+                    <td class="font-medium text-slate-800">{{ attempt.quiz.title }}</td>
+                    <td class="text-slate-500">{{ attempt.quiz.module.title }}</td>
+                    <td class="tabular-nums text-slate-600">{{ '%.2f'|format(attempt.score) }} / {{ '%.2f'|format(attempt.max_score) }}</td>
                     <td>
-                        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('learning.quiz_result', attempt_id=attempt.id) }}">View</a>
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1 h-1.5 rounded-full bg-slate-100 max-w-[80px]">
+                                <div class="h-1.5 rounded-full bg-brand-500" style="width: {{ [attempt.percentage, 100] | min }}%"></div>
+                            </div>
+                            <span class="tabular-nums text-slate-700 text-sm font-medium">{{ '%.1f'|format(attempt.percentage) }}%</span>
+                        </div>
                     </td>
+                    <td class="text-slate-500 tabular-nums">{{ attempt.submitted_at.strftime('%Y-%m-%d %H:%M') if attempt.submitted_at else 'In progress' }}</td>
+                    <td><a href="{{ url_for('learning.quiz_result', attempt_id=attempt.id) }}" class="btn-secondary btn-sm">View</a></td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="6" class="text-center text-muted py-4">No quiz attempts yet.</td>
+                    <td colspan="6" class="text-center text-slate-400 py-10">No quiz attempts yet.</td>
                 </tr>
                 {% endfor %}
             </tbody>

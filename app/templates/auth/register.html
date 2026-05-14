@@ -1,79 +1,103 @@
 {% extends 'base.html' %}
-
-{% block title %}Register | Flask LMS{% endblock %}
+{% block title %}Create account | LMS{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h1 class="h4 mb-3">Create your account</h1>
-                <p class="text-muted small">
-                    All new accounts start as pending. An admin must approve your registration before you can access course materials.
-                </p>
+<div class="min-h-[calc(100vh-8rem)] flex items-center justify-center py-8">
+    <div class="w-full max-w-lg">
 
-                <form method="post" novalidate>
-                    {{ form.hidden_tag() }}
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            {{ form.full_name.label(class='form-label') }}
-                            {{ form.full_name(class='form-control', placeholder='Your full name') }}
-                            {% for error in form.full_name.errors %}
-                            <div class="text-danger small">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            {{ form.email.label(class='form-label') }}
-                            {{ form.email(class='form-control', placeholder='you@example.com') }}
-                            {% for error in form.email.errors %}
-                            <div class="text-danger small">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            {{ form.role.label(class='form-label') }}
-                            {{ form.role(class='form-select') }}
-                            {% for error in form.role.errors %}
-                            <div class="text-danger small">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            {{ form.main_course_code.label(class='form-label') }}
-                            {{ form.main_course_code(class='form-control', placeholder='Example: ABCD1234') }}
-                            <div class="form-text">{{ form.main_course_code.description }}</div>
-                            {% for error in form.main_course_code.errors %}
-                            <div class="text-danger small">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            {{ form.password.label(class='form-label') }}
-                            {{ form.password(class='form-control', placeholder='At least 8 characters') }}
-                            {% for error in form.password.errors %}
-                            <div class="text-danger small">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            {{ form.confirm_password.label(class='form-label') }}
-                            {{ form.confirm_password(class='form-control', placeholder='Repeat password') }}
-                            {% for error in form.confirm_password.errors %}
-                            <div class="text-danger small">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    {{ form.submit(class='btn btn-success w-100') }}
-                </form>
+        <!-- Heading -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-brand-600 rounded-2xl shadow-md mb-4">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                </svg>
             </div>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Create your account</h1>
+            <p class="text-slate-500 text-sm mt-1 max-w-sm mx-auto">
+                New accounts start as <span class="font-medium text-slate-700">pending</span>. An admin must approve your registration before you can access course materials.
+            </p>
         </div>
+
+        <!-- Card -->
+        <div class="card p-8">
+            <form method="post" novalidate class="flex flex-col gap-5">
+                {{ form.hidden_tag() }}
+
+                <!-- Full name -->
+                <div class="form-field">
+                    {{ form.full_name.label(class='form-label') }}
+                    {{ form.full_name(class='form-input' + (' is-invalid' if form.full_name.errors else ''), placeholder='Your full name') }}
+                    {% for error in form.full_name.errors %}
+                    <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Email -->
+                <div class="form-field">
+                    {{ form.email.label(class='form-label') }}
+                    {{ form.email(class='form-input' + (' is-invalid' if form.email.errors else ''), placeholder='you@example.com') }}
+                    {% for error in form.email.errors %}
+                    <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Role -->
+                <div class="form-field">
+                    {{ form.role.label(class='form-label') }}
+                    {{ form.role(class='form-select' + (' is-invalid' if form.role.errors else '')) }}
+                    {% for error in form.role.errors %}
+                    <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Main course code -->
+                <div class="form-field">
+                    {{ form.main_course_code.label(class='form-label') }}
+                    {{ form.main_course_code(class='form-input' + (' is-invalid' if form.main_course_code.errors else ''), placeholder='e.g. ABCD1234') }}
+                    {% if form.main_course_code.description %}
+                    <p class="form-hint">{{ form.main_course_code.description }}</p>
+                    {% endif %}
+                    {% for error in form.main_course_code.errors %}
+                    <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Follow-up code -->
+                <div class="form-field">
+                    {{ form.follow_up_code.label(class='form-label') }}
+                    {{ form.follow_up_code(class='form-input' + (' is-invalid' if form.follow_up_code.errors else ''), placeholder='Enter follow-up code') }}
+                    {% for error in form.follow_up_code.errors %}
+                    <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Password row -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-field">
+                        {{ form.password.label(class='form-label') }}
+                        {{ form.password(class='form-input' + (' is-invalid' if form.password.errors else ''), placeholder='Min. 8 characters') }}
+                        {% for error in form.password.errors %}
+                        <p class="form-error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="form-field">
+                        {{ form.confirm_password.label(class='form-label') }}
+                        {{ form.confirm_password(class='form-input' + (' is-invalid' if form.confirm_password.errors else ''), placeholder='Repeat password') }}
+                        {% for error in form.confirm_password.errors %}
+                        <p class="form-error">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {{ form.submit(class='btn-primary w-full justify-center py-2.5 text-[15px] mt-1') }}
+            </form>
+
+            <p class="mt-6 text-center text-sm text-slate-500">
+                Already have an account?
+                <a href="{{ url_for('auth.login') }}" class="font-semibold text-brand-600 hover:text-brand-700 transition-colors">Sign in</a>
+            </p>
+        </div>
+
     </div>
 </div>
 {% endblock %}

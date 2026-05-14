@@ -1,39 +1,45 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
+{% block title %}Content Overview | LMS{% endblock %}
 
-{% block title %}Content Overview | Flask LMS{% endblock %}
-
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">Admin Content Overview</h1>
-    <a class="btn btn-outline-secondary" href="{{ url_for('teacher.dashboard') }}">Back to teaching tools</a>
+{% block admin_content %}
+<div class="page-header">
+    <h1 class="page-title">Content Overview</h1>
+    <a href="{{ url_for('teacher.dashboard') }}" class="btn-secondary btn-sm">← Teaching Tools</a>
 </div>
 
-{% for main_course in main_courses %}
-<div class="card shadow-sm mb-3">
-    <div class="card-body">
-        <h2 class="h5">{{ main_course.title }}</h2>
-        <div class="small text-muted mb-2">Code: {{ main_course.access_code }}</div>
-
+{% if main_courses %}
+<div class="flex flex-col gap-4">
+    {% for main_course in main_courses %}
+    <div class="card overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center gap-3">
+            <h2 class="font-semibold text-slate-800">{{ main_course.title }}</h2>
+            <span class="badge badge-brand">{{ main_course.access_code }}</span>
+        </div>
         {% if main_course.sub_courses %}
-        <ul class="list-group list-group-flush">
+        <div class="divide-y divide-slate-50">
             {% for sub_course in main_course.sub_courses %}
-            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+            <div class="flex items-center justify-between px-6 py-3">
                 <div>
-                    <strong>{{ sub_course.title }}</strong>
-                    <div class="small text-muted">{{ sub_course.description or 'No description.' }}</div>
+                    <p class="text-sm font-medium text-slate-800">{{ sub_course.title }}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">{{ sub_course.description or 'No description.' }}</p>
                 </div>
-                <span class="badge {% if sub_course.is_published %}bg-success{% else %}bg-secondary{% endif %}">
-                    {{ 'Published' if sub_course.is_published else 'Hidden' }}
-                </span>
-            </li>
+                {% if sub_course.is_published %}
+                <span class="badge badge-success">Published</span>
+                {% else %}
+                <span class="badge badge-neutral">Hidden</span>
+                {% endif %}
+            </div>
             {% endfor %}
-        </ul>
+        </div>
         {% else %}
-        <div class="text-muted">No sub-courses.</div>
+        <div class="px-6 py-4 text-sm text-slate-400">No sub-courses.</div>
         {% endif %}
     </div>
+    {% endfor %}
 </div>
 {% else %}
-<div class="alert alert-warning">No courses found.</div>
-{% endfor %}
+<div class="card p-10 text-center max-w-sm">
+    <p class="text-sm text-slate-400">No courses found.</p>
+</div>
+{% endif %}
 {% endblock %}

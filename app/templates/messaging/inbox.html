@@ -1,16 +1,20 @@
 {% extends 'base.html' %}
-
-{% block title %}Inbox | Flask LMS{% endblock %}
+{% block title %}Inbox | LMS{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">Inbox</h1>
-    <a class="btn btn-primary" href="{{ url_for('messaging.compose') }}">Compose</a>
+<div class="page-header">
+    <h1 class="page-title">Inbox</h1>
+    <a href="{{ url_for('messaging.compose') }}" class="btn-primary">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+        </svg>
+        Compose
+    </a>
 </div>
 
-<div class="card shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-hover mb-0 align-middle">
+<div class="card">
+    <div class="overflow-x-auto">
+        <table class="data-table">
             <thead>
                 <tr>
                     <th>From</th>
@@ -21,25 +25,26 @@
             </thead>
             <tbody>
                 {% for message in messages %}
-                <tr>
-                    <td>{{ message.sender.full_name }}</td>
+                <tr class="{% if not message.is_read %}bg-brand-50/30{% endif %}">
+                    <td class="font-medium text-slate-800">{{ message.sender.full_name }}</td>
                     <td>
-                        <a href="{{ url_for('messaging.view_message', message_id=message.id) }}">
+                        <a href="{{ url_for('messaging.view_message', message_id=message.id) }}"
+                           class="text-sm font-medium text-slate-800 hover:text-brand-600 transition-colors {% if not message.is_read %}font-semibold{% endif %}">
                             {{ message.subject or '(No subject)' }}
                         </a>
                     </td>
-                    <td>{{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="text-slate-500 tabular-nums">{{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                     <td>
                         {% if message.is_read %}
-                        <span class="badge bg-secondary">Read</span>
+                        <span class="badge badge-neutral">Read</span>
                         {% else %}
-                        <span class="badge bg-success">New</span>
+                        <span class="badge badge-brand">New</span>
                         {% endif %}
                     </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="4" class="text-center text-muted py-4">No messages in inbox.</td>
+                    <td colspan="4" class="text-center text-slate-400 py-10">Your inbox is empty.</td>
                 </tr>
                 {% endfor %}
             </tbody>

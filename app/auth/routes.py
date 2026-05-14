@@ -37,6 +37,7 @@ def register():
                 role=UserRole(form.role.data),
                 is_approved=False,
                 is_active=True,
+                follow_up_code=form.follow_up_code.data.strip()  # Add this line
             )
             user.set_password(form.password.data)
 

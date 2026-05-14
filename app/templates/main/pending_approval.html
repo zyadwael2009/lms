@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
-
-{% block title %}Pending Approval | Flask LMS{% endblock %}
+{% block title %}Pending Approval | LMS{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card border-warning shadow-sm">
-            <div class="card-body p-4">
-                <h1 class="h4">Account Pending Approval</h1>
-                <p class="mb-2">
-                    Your registration has been submitted and is waiting for admin approval.
-                </p>
-                <p class="text-muted mb-0 small">
-                    Once approved, any main course code entered during registration will unlock all related sub-courses.
-                </p>
-            </div>
+<div class="min-h-[calc(100vh-8rem)] flex items-center justify-center py-8">
+    <div class="max-w-md w-full text-center">
+        <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-amber-50 flex items-center justify-center">
+            <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
         </div>
+        <h1 class="text-2xl font-bold text-slate-900 tracking-tight mb-3">Account Pending Approval</h1>
+        <p class="text-slate-500 leading-relaxed mb-2">
+            Your registration has been submitted and is awaiting admin review.
+        </p>
+        <p class="text-sm text-slate-400 leading-relaxed">
+            Once approved, any main course code entered during registration will unlock all related sub-courses.
+        </p>
     </div>
 </div>
 {% endblock %}

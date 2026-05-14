@@ -1,100 +1,222 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}LMS{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50:  '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    },
+                    boxShadow: {
+                        'card':  '0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04)',
+                        'card-md': '0 4px 16px -2px rgb(0 0 0 / 0.08), 0 2px 6px -2px rgb(0 0 0 / 0.04)',
+                        'dropdown': '0 8px 30px -4px rgb(0 0 0 / 0.12), 0 2px 8px -2px rgb(0 0 0 / 0.06)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    {% block head %}{% endblock %}
 </head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">Flask LMS</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
+<body class="h-full bg-slate-50 text-slate-900 antialiased">
+
+<!-- ─── Top Navigation ─────────────────────────────────────────────────── -->
+<header id="site-header" class="sticky top-0 z-40 h-16 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-shadow duration-200">
+    <nav class="max-w-screen-2xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between gap-4">
+
+        <!-- Left: Brand + primary links -->
+        <div class="flex items-center gap-6 min-w-0">
+            <a href="{{ url_for('main.index') }}" class="flex items-center gap-2.5 flex-shrink-0 group">
+                <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shadow-sm group-hover:bg-brand-700 transition-colors">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <span class="font-semibold text-[15px] tracking-tight text-slate-900">LMS</span>
+            </a>
+
+            <!-- Desktop nav links -->
+            <div class="hidden md:flex items-center gap-0.5">
+                <a href="{{ url_for('main.index') }}" class="nav-link">Home</a>
                 {% if current_user.is_authenticated and not current_user.is_admin %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.my_courses') }}">My Courses</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('learning.my_results') }}">Results</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('messaging.inbox') }}">Messages</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('billing.plans') }}">Plans</a></li>
+                <a href="{{ url_for('main.my_courses') }}" class="nav-link">My Courses</a>
+                <a href="{{ url_for('learning.my_results') }}" class="nav-link">Results</a>
+                <a href="{{ url_for('messaging.inbox') }}" class="nav-link">Messages</a>
+                <a href="{{ url_for('billing.plans') }}" class="nav-link">Plans</a>
                 {% if current_user.role.value == 'parent' %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.parent_children') }}">My Students</a></li>
+                <a href="{{ url_for('main.parent_children') }}" class="nav-link">My Students</a>
                 {% endif %}
                 {% endif %}
                 {% if current_user.is_authenticated and current_user.is_admin %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a></li>
-                {% if current_user.has_admin_permission('analytics') %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.analytics') }}">Analytics</a></li>
+                <a href="{{ url_for('admin.dashboard') }}" class="nav-link">Admin</a>
+                <a href="{{ url_for('teacher.dashboard') }}" class="nav-link">Teaching</a>
                 {% endif %}
-                {% if current_user.has_admin_permission('users') %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.pending_users') }}">Pending Users</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.manage_users') }}">Manage Users</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.manage_enrollments') }}">Enrollments</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.manage_parent_links') }}">Parent Links</a></li>
-                {% endif %}
-                {% if current_user.has_admin_permission('content') %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.manage_courses') }}">Manage Courses</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.manage_plans') }}">Manage Plans</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('teacher.dashboard') }}">Teaching Tools</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('teacher.content_review') }}">Publish Workflow</a></li>
-                {% endif %}
-                {% if current_user.has_admin_permission('grading') %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('teacher.attempts') }}">Grade Attempts</a></li>
-                {% endif %}
-                {% endif %}
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                {% if current_user.is_authenticated %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ current_user.full_name }} ({{ current_user.role.value }})
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                        <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
-                    </ul>
-                </li>
-                {% else %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
-                {% endif %}
-            </ul>
+            </div>
         </div>
-    </div>
-</nav>
-```
 
-#### 2. Improve Alert Messages
-
-```html
-app\templates\base.html
-<<<<<<< SEARCH
-<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-    {{ message }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-
-<main class="py-4">
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <!-- Right: Auth actions -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+            {% if current_user.is_authenticated %}
+            <!-- User dropdown -->
+            <div class="relative" id="user-menu-wrapper">
+                <button id="user-menu-btn" type="button"
+                    class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors text-sm font-medium text-slate-700 focus:outline-none"
+                    onclick="toggleDropdown('user-menu')">
+                    <div class="w-7 h-7 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-semibold select-none">
+                        {{ (current_user.full_name or '?')[0].upper() }}
+                    </div>
+                    <span class="hidden sm:inline max-w-[140px] truncate">{{ current_user.full_name }}</span>
+                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="user-menu" class="dropdown-panel hidden absolute right-0 top-full mt-1.5 w-56">
+                    <div class="px-4 py-3 border-b border-slate-100">
+                        <p class="text-[13px] font-semibold text-slate-900 truncate">{{ current_user.full_name }}</p>
+                        <p class="text-xs text-slate-500 capitalize mt-0.5">{{ current_user.role.value }}</p>
+                    </div>
+                    <div class="p-1">
+                        <form method="post" action="{{ url_for('auth.logout') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="dropdown-item w-full text-left text-red-600 hover:bg-red-50 hover:text-red-700">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                                Sign out
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                {% endfor %}
+            </div>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}" class="nav-link text-slate-600">Sign in</a>
+            <a href="{{ url_for('auth.register') }}" class="btn-primary">Get started</a>
             {% endif %}
-        {% endwith %}
 
+            <!-- Mobile hamburger -->
+            <button type="button" class="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-600"
+                onclick="toggleDropdown('mobile-menu')">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile menu panel -->
+    <div id="mobile-menu" class="hidden md:hidden absolute inset-x-0 top-full bg-white border-b border-slate-200 shadow-dropdown z-50 px-4 py-3 flex flex-col gap-0.5">
+        <a href="{{ url_for('main.index') }}" class="mobile-nav-link">Home</a>
+        {% if current_user.is_authenticated and not current_user.is_admin %}
+        <a href="{{ url_for('main.my_courses') }}" class="mobile-nav-link">My Courses</a>
+        <a href="{{ url_for('learning.my_results') }}" class="mobile-nav-link">Results</a>
+        <a href="{{ url_for('messaging.inbox') }}" class="mobile-nav-link">Messages</a>
+        <a href="{{ url_for('billing.plans') }}" class="mobile-nav-link">Plans</a>
+        {% if current_user.role.value == 'parent' %}
+        <a href="{{ url_for('main.parent_children') }}" class="mobile-nav-link">My Students</a>
+        {% endif %}
+        {% endif %}
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <a href="{{ url_for('admin.dashboard') }}" class="mobile-nav-link">Admin</a>
+        <a href="{{ url_for('teacher.dashboard') }}" class="mobile-nav-link">Teaching Tools</a>
+        {% endif %}
+    </div>
+</header>
+
+<!-- ─── Main content ───────────────────────────────────────────────────── -->
+<main class="min-h-[calc(100vh-4rem)]">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 py-8">
         {% block content %}{% endblock %}
     </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- ─── Toast notifications ───────────────────────────────────────────── -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div id="toast-stack" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 w-full max-w-[360px] pointer-events-none">
+    {% for category, message in messages %}
+    <div class="toast-item toast-{{ category }} pointer-events-auto flex items-start gap-3 bg-white rounded-xl border border-slate-200 shadow-dropdown p-4 transition-all duration-300"
+         style="animation: toastIn 0.25s ease forwards;">
+        {% if category == 'success' %}
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </span>
+        {% elif category in ['danger', 'error'] %}
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-red-50 flex items-center justify-center">
+            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </span>
+        {% elif category == 'warning' %}
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center">
+            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </span>
+        {% else %}
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center">
+            <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </span>
+        {% endif %}
+        <p class="flex-1 text-sm font-medium text-slate-800 leading-snug pt-0.5">{{ message }}</p>
+        <button type="button" onclick="dismissToast(this)" class="flex-shrink-0 mt-0.5 text-slate-400 hover:text-slate-600 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<script>
+function toggleDropdown(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('hidden');
+}
+
+document.addEventListener('click', function(e) {
+    // Close user dropdown when clicking outside
+    const userMenu = document.getElementById('user-menu');
+    const userWrapper = document.getElementById('user-menu-wrapper');
+    if (userMenu && !userMenu.classList.contains('hidden') && userWrapper && !userWrapper.contains(e.target)) {
+        userMenu.classList.add('hidden');
+    }
+
+    // Close mobile menu when clicking outside the header
+    const mobileMenu = document.getElementById('mobile-menu');
+    const header = document.getElementById('site-header');
+    if (mobileMenu && !mobileMenu.classList.contains('hidden') && header && !header.contains(e.target)) {
+        mobileMenu.classList.add('hidden');
+    }
+});
+
+function dismissToast(btn) {
+    const toast = btn.closest('.toast-item');
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(1rem)';
+    setTimeout(() => toast.remove(), 200);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toast-item').forEach(function(toast) {
+        setTimeout(function() { dismissToast(toast.querySelector('button')); }, 5000);
+    });
+});
+</script>
 </body>
 </html>

@@ -61,7 +61,28 @@ def lesson_detail(lesson_id: int):
         flash("You cannot access this lesson.", "danger")
         return redirect(url_for("main.my_courses"))
 
-    return render_template("learning/lesson_detail.html", lesson=lesson)
+    sub_course = lesson.module.sub_course
+    published_lessons = [
+        item for module in sub_course.modules for item in module.lessons if item.is_published
+    ]
+    current_index = next((index for index, item in enumerate(published_lessons) if item.id == lesson.id), None)
+
+    previous_lesson = None
+    next_lesson = None
+    if current_index is not None:
+        if current_index > 0:
+            previous_lesson = published_lessons[current_index - 1]
+        if current_index < len(published_lessons) - 1:
+            next_lesson = published_lessons[current_index + 1]
+
+    return render_template(
+        "learning/lesson_detail.html",
+        lesson=lesson,
+        sub_course=sub_course,
+        current_lesson=lesson,
+        previous_lesson=previous_lesson,
+        next_lesson=next_lesson,
+    )
 
 
 @learning_bp.route("/quizzes/<int:quiz_id>/start", methods=["POST"])

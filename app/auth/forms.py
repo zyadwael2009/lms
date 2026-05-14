@@ -5,12 +5,14 @@ from wtforms.validators import DataRequired, Email, EqualTo, Length, Optional
 
 from app.models import User, UserRole
 
-
 class RegistrationForm(FlaskForm):
     """Collects the information required to create a user account."""
 
     full_name = StringField("Full name", validators=[DataRequired(), Length(min=2, max=120)])
-    email = StringField("Email", validators=[DataRequired(), Email(), Length(max=255)])
+    email = StringField(
+        "Email",
+        validators=[DataRequired(), Email(check_deliverability=False), Length(max=255)],
+    )
     role = SelectField(
         "Account type",
         choices=[
@@ -24,6 +26,12 @@ class RegistrationForm(FlaskForm):
         "Main course code",
         validators=[Optional(), Length(max=24)],
         description="Optional: enter a main course code to unlock all its sub-courses once approved.",
+    )
+
+    follow_up_code = StringField(
+        "Follow-up Code",
+        validators=[DataRequired(), Length(min=6, max=10)],
+        description="Enter the follow-up code provided by your admin."
     )
 
     password = PasswordField("Password", validators=[DataRequired(), Length(min=8, max=128)])
@@ -41,7 +49,7 @@ class RegistrationForm(FlaskForm):
 class LoginForm(FlaskForm):
     """Login form for existing users."""
 
-    email = StringField("Email", validators=[DataRequired(), Email()])
+    email = StringField("Email", validators=[DataRequired(), Email(check_deliverability=False)])
     password = PasswordField("Password", validators=[DataRequired()])
     remember = BooleanField("Remember me")
     submit = SubmitField("Sign in")

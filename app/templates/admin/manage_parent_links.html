@@ -1,36 +1,39 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
+{% block title %}Parent Links | LMS{% endblock %}
 
-{% block title %}Manage Parent Links | Flask LMS{% endblock %}
+{% block admin_content %}
+<div class="page-header">
+    <h1 class="page-title">Parent–Student Links</h1>
+</div>
 
-{% block content %}
-<div class="row g-4">
-    <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h1 class="h5 mb-3">Link Parent to Student</h1>
-                <form method="post" novalidate>
-                    {{ form.hidden_tag() }}
-
-                    <div class="mb-3">
-                        {{ form.parent_id.label(class='form-label') }}
-                        {{ form.parent_id(class='form-select') }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.student_id.label(class='form-label') }}
-                        {{ form.student_id(class='form-select') }}
-                    </div>
-
-                    {{ form.submit(class='btn btn-primary w-100') }}
-                </form>
-            </div>
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+    <!-- Form -->
+    <div class="lg:col-span-2">
+        <div class="card p-6">
+            <h2 class="font-semibold text-slate-800 mb-5">Link Parent to Student</h2>
+            <form method="post" novalidate class="flex flex-col gap-4">
+                {{ form.hidden_tag() }}
+                <div class="form-field">
+                    {{ form.parent_id.label(class='form-label') }}
+                    {{ form.parent_id(class='form-select') }}
+                </div>
+                <div class="form-field">
+                    {{ form.student_id.label(class='form-label') }}
+                    {{ form.student_id(class='form-select') }}
+                </div>
+                {{ form.submit(class='btn-primary w-full justify-center mt-1') }}
+            </form>
         </div>
     </div>
 
-    <div class="col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white"><h2 class="h6 mb-0">Existing Links</h2></div>
-            <div class="table-responsive">
-                <table class="table table-striped mb-0 align-middle">
+    <!-- Links table -->
+    <div class="lg:col-span-3">
+        <div class="card">
+            <div class="px-6 py-4 border-b border-slate-100">
+                <h2 class="font-semibold text-slate-800">Existing Links</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Parent</th>
@@ -41,17 +44,19 @@
                     <tbody>
                         {% for link in links %}
                         <tr>
-                            <td>{{ link.parent.full_name }}</td>
-                            <td>{{ link.student.full_name }}</td>
+                            <td class="font-medium text-slate-800">{{ link.parent.full_name }}</td>
+                            <td class="text-slate-600">{{ link.student.full_name }}</td>
                             <td>
                                 <form method="post" action="{{ url_for('admin.delete_parent_link', link_id=link.id) }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                    <button type="submit" class="btn-danger btn-sm">Delete</button>
                                 </form>
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="3" class="text-center text-muted py-4">No parent links yet.</td></tr>
+                        <tr>
+                            <td colspan="3" class="text-center text-slate-400 py-10">No links yet.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>

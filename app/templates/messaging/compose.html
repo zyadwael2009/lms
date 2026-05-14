@@ -1,45 +1,40 @@
 {% extends 'base.html' %}
-
-{% block title %}Compose Message | Flask LMS{% endblock %}
+{% block title %}Compose | LMS{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h1 class="h4 mb-3">Compose Message</h1>
-                <form method="post" novalidate>
-                    {{ form.hidden_tag() }}
+<div class="max-w-2xl">
+    <div class="page-header">
+        <h1 class="page-title">Compose Message</h1>
+        <a href="{{ url_for('messaging.inbox') }}" class="btn-secondary btn-sm">← Inbox</a>
+    </div>
 
-                    <div class="mb-3">
-                        {{ form.receiver_id.label(class='form-label') }}
-                        {{ form.receiver_id(class='form-select') }}
-                        {% for error in form.receiver_id.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+    <div class="card p-6">
+        <form method="post" novalidate class="flex flex-col gap-5">
+            {{ form.hidden_tag() }}
 
-                    <div class="mb-3">
-                        {{ form.subject.label(class='form-label') }}
-                        {{ form.subject(class='form-control', placeholder='Optional subject') }}
-                        {% for error in form.subject.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="mb-3">
-                        {{ form.body.label(class='form-label') }}
-                        {{ form.body(class='form-control', rows='6', placeholder='Write your message...') }}
-                        {% for error in form.body.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-
-                    {{ form.submit(class='btn btn-primary') }}
-                    <a class="btn btn-outline-secondary" href="{{ url_for('messaging.inbox') }}">Cancel</a>
-                </form>
+            <div class="form-field">
+                {{ form.receiver_id.label(class='form-label') }}
+                {{ form.receiver_id(class='form-select') }}
+                {% for error in form.receiver_id.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
             </div>
-        </div>
+
+            <div class="form-field">
+                {{ form.subject.label(class='form-label') }}
+                {{ form.subject(class='form-input', placeholder='Optional subject') }}
+                {% for error in form.subject.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="form-field">
+                {{ form.body.label(class='form-label') }}
+                {{ form.body(class='form-textarea', rows='6', placeholder='Write your message…') }}
+                {% for error in form.body.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="flex gap-3">
+                {{ form.submit(class='btn-primary') }}
+                <a href="{{ url_for('messaging.inbox') }}" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

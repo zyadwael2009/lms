@@ -1,47 +1,58 @@
 {% extends 'base.html' %}
-
-{% block title %}My Subscriptions | Flask LMS{% endblock %}
+{% block title %}My Subscriptions | LMS{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">My Subscriptions</h1>
-    <a class="btn btn-outline-secondary" href="{{ url_for('billing.plans') }}">Browse plans</a>
+<div class="page-header">
+    <h1 class="page-title">My Subscriptions</h1>
+    <a href="{{ url_for('billing.plans') }}" class="btn-secondary btn-sm">Browse Plans</a>
 </div>
 
-<div class="card shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-striped mb-0 align-middle">
+<div class="card">
+    <div class="overflow-x-auto">
+        <table class="data-table">
             <thead>
                 <tr>
                     <th>Plan</th>
                     <th>Status</th>
                     <th>Start</th>
                     <th>End</th>
-                    <th>Auto renew</th>
-                    <th>Action</th>
+                    <th>Auto Renew</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for subscription in subscriptions %}
                 <tr>
-                    <td>{{ subscription.plan.name }}</td>
-                    <td><span class="badge bg-secondary">{{ subscription.status.value|title }}</span></td>
-                    <td>{{ subscription.starts_at.strftime('%Y-%m-%d') if subscription.starts_at else '-' }}</td>
-                    <td>{{ subscription.ends_at.strftime('%Y-%m-%d') if subscription.ends_at else '-' }}</td>
-                    <td>{{ 'Yes' if subscription.auto_renew else 'No' }}</td>
+                    <td class="font-medium text-slate-800">{{ subscription.plan.name }}</td>
+                    <td>
+                        <span class="badge {% if subscription.status.value == 'active' %}badge-success{% else %}badge-neutral{% endif %} capitalize">
+                            {{ subscription.status.value|title }}
+                        </span>
+                    </td>
+                    <td class="text-slate-500 tabular-nums">{{ subscription.starts_at.strftime('%Y-%m-%d') if subscription.starts_at else '—' }}</td>
+                    <td class="text-slate-500 tabular-nums">{{ subscription.ends_at.strftime('%Y-%m-%d') if subscription.ends_at else '—' }}</td>
+                    <td>
+                        {% if subscription.auto_renew %}
+                        <span class="badge badge-success">Yes</span>
+                        {% else %}
+                        <span class="badge badge-neutral">No</span>
+                        {% endif %}
+                    </td>
                     <td>
                         {% if subscription.status.value == 'active' %}
                         <form method="post" action="{{ url_for('billing.cancel_subscription', subscription_id=subscription.id) }}">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button class="btn btn-sm btn-outline-danger" type="submit">Cancel</button>
+                            <button type="submit" class="btn-danger btn-sm">Cancel</button>
                         </form>
                         {% else %}
-                        <span class="text-muted small">No actions</span>
+                        <span class="text-xs text-slate-400">—</span>
                         {% endif %}
                     </td>
                 </tr>
                 {% else %}
-                <tr><td colspan="6" class="text-center text-muted py-4">No subscriptions found.</td></tr>
+                <tr>
+                    <td colspan="6" class="text-center text-slate-400 py-10">No subscriptions found.</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>

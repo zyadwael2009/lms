@@ -89,6 +89,8 @@ class User(UserMixin, TimestampMixin, db.Model):
     is_approved = db.Column(db.Boolean, default=False, nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
 
+    follow_up_code = db.Column(db.String(10), nullable=True)  # Add this line
+
     enrollments = db.relationship("Enrollment", back_populates="user", cascade="all, delete-orphan")
     quiz_attempts = db.relationship("QuizAttempt", back_populates="user", cascade="all, delete-orphan")
 

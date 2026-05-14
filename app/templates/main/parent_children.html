@@ -1,34 +1,54 @@
 {% extends 'base.html' %}
-
-{% block title %}My Students | Flask LMS{% endblock %}
+{% block title %}My Students | LMS{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">My Linked Students</h1>
-    <a class="btn btn-outline-secondary" href="{{ url_for('main.index') }}">Back to home</a>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">My Students</h1>
+        <p class="page-subtitle">Linked students and their progress</p>
+    </div>
+    <a href="{{ url_for('main.index') }}" class="btn-secondary btn-sm">← Home</a>
 </div>
 
 {% if students %}
-<div class="row g-3 mb-4">
+<!-- Student cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
     {% for student in students %}
-    <div class="col-md-6 col-xl-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body">
-                <h2 class="h5">{{ student.full_name }}</h2>
-                <div class="small text-muted mb-2">{{ student.email }}</div>
-                <div class="small">Enrolled main courses: <strong>{{ course_counts.get(student.id, 0) }}</strong></div>
-                <div class="small">Quiz attempts: <strong>{{ attempt_counts.get(student.id, 0) }}</strong></div>
-                <div class="small">Average score: <strong>{{ '%.1f'|format(average_scores.get(student.id, 0)) }}%</strong></div>
+    <div class="card p-5">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center font-bold text-brand-600 text-sm flex-shrink-0">
+                {{ (student.full_name or '?')[0].upper() }}
+            </div>
+            <div class="min-w-0">
+                <p class="font-semibold text-slate-800 truncate">{{ student.full_name }}</p>
+                <p class="text-xs text-slate-400 truncate">{{ student.email }}</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-slate-50 rounded-lg p-2">
+                <p class="text-lg font-bold text-slate-800">{{ course_counts.get(student.id, 0) }}</p>
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Courses</p>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-2">
+                <p class="text-lg font-bold text-slate-800">{{ attempt_counts.get(student.id, 0) }}</p>
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Attempts</p>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-2">
+                <p class="text-lg font-bold text-slate-800">{{ '%.0f'|format(average_scores.get(student.id, 0)) }}%</p>
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Avg Score</p>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
 
-<div class="card shadow-sm">
-    <div class="card-header bg-white"><h2 class="h5 mb-0">Recent Quiz Attempts</h2></div>
-    <div class="table-responsive">
-        <table class="table table-hover mb-0">
+<!-- Recent attempts table -->
+<div class="card">
+    <div class="px-6 py-4 border-b border-slate-100">
+        <h2 class="font-semibold text-slate-800">Recent Quiz Attempts</h2>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="data-table">
             <thead>
                 <tr>
                     <th>Student</th>
@@ -41,20 +61,35 @@
             <tbody>
                 {% for attempt in recent_attempts %}
                 <tr>
-                    <td>{{ attempt.user.full_name }}</td>
-                    <td>{{ attempt.quiz.title }}</td>
-                    <td>{{ '%.2f'|format(attempt.score) }} / {{ '%.2f'|format(attempt.max_score) }}</td>
-                    <td>{{ '%.1f'|format(attempt.percentage) }}%</td>
-                    <td>{{ attempt.submitted_at.strftime('%Y-%m-%d %H:%M') if attempt.submitted_at else '-' }}</td>
+                    <td class="font-medium text-slate-800">{{ attempt.user.full_name }}</td>
+                    <td class="text-slate-600">{{ attempt.quiz.title }}</td>
+                    <td class="tabular-nums text-slate-600">{{ '%.2f'|format(attempt.score) }} / {{ '%.2f'|format(attempt.max_score) }}</td>
+                    <td class="tabular-nums text-slate-600">{{ '%.1f'|format(attempt.percentage) }}%</td>
+                    <td class="text-slate-500 tabular-nums">{{ attempt.submitted_at.strftime('%Y-%m-%d %H:%M') if attempt.submitted_at else '—' }}</td>
                 </tr>
                 {% else %}
-                <tr><td colspan="5" class="text-center text-muted py-4">No attempts yet.</td></tr>
+                <tr>
+                    <td colspan="5" class="text-center text-slate-400 py-10">No attempts yet.</td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
 {% else %}
-<div class="alert alert-warning">No students are linked to your parent account yet. Ask admin to add the link.</div>
+<div class="max-w-md">
+    <div class="card p-8 text-center">
+        <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-amber-50 flex items-center justify-center">
+            <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+        </div>
+        <h3 class="font-semibold text-slate-800 mb-2">No students linked</h3>
+        <p class="text-sm text-slate-500 leading-relaxed">
+            No students are linked to your parent account yet. Ask an admin to add the link.
+        </p>
+    </div>
+</div>
 {% endif %}
 {% endblock %}
