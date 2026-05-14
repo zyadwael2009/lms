@@ -67,6 +67,22 @@ body {
 }
 .dropdown-item:hover { background-color: #f8fafc; }
 
+/* ── Icons ───────────────────────────────────────────── */
+.nav-link svg,
+.mobile-nav-link svg,
+.btn-primary svg,
+.btn-secondary svg,
+.btn-danger svg,
+.btn-ghost svg,
+.dropdown-item svg,
+.sidebar-link svg,
+.lesson-link svg {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+}
+
 /* ── Buttons ──────────────────────────────────────────── */
 .btn-primary {
     display: inline-flex;
