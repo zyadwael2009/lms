@@ -11,6 +11,25 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Brand palette fallbacks ─────────────────────────── */
+.bg-brand-50 { background-color: #eef2ff; }
+.bg-brand-100 { background-color: #e0e7ff; }
+.bg-brand-600 { background-color: #4f46e5; }
+.bg-brand-700 { background-color: #4338ca; }
+.text-brand-500 { color: #6366f1; }
+.text-brand-600 { color: #4f46e5; }
+.text-brand-700 { color: #4338ca; }
+.border-brand-100 { border-color: #e0e7ff; }
+.border-brand-200 { border-color: #c7d2fe; }
+.hover\:bg-brand-50\/50:hover { background-color: rgba(238, 242, 255, 0.5); }
+.hover\:bg-brand-100:hover { background-color: #e0e7ff; }
+.hover\:bg-brand-700:hover { background-color: #4338ca; }
+.hover\:text-brand-600:hover { color: #4f46e5; }
+.hover\:text-brand-700:hover { color: #4338ca; }
+.group:hover .group-hover\:bg-brand-100 { background-color: #e0e7ff; }
+.group:hover .group-hover\:text-brand-600 { color: #4f46e5; }
+.group:hover .group-hover\:text-brand-700 { color: #4338ca; }
+
 /* ── Navigation ───────────────────────────────────────── */
 .nav-link {
     display: inline-flex;
